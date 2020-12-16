@@ -1,5 +1,5 @@
 {
-    "name": "@finagraph/webwidgets-finconnector-react",
+    "name": "@finagraph/finconnect-react",
     "version": "1.0.0",
     "description": "React components to integrate with Finagraph Strongbox",
     "author": "Finagraph",

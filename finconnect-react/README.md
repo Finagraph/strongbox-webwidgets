@@ -9,7 +9,7 @@ More information about the SDK can be found in [Strongbox Developer Portal](http
 
 # Getting started
 
-This document assumes that you have the [Demo Application](../webwidgets-finconnector-react-demo) that demonstrates using the Strongbox react component.   The application is fully documented in comments and makes it very simple to understand how to use the SDK to generate security tokens required to use the component in addition to simply using the component.
+This document assumes that you have the [Demo Application](../finconnect-react-demo) that demonstrates using the Strongbox react component.   The application is fully documented in comments and makes it very simple to understand how to use the SDK to generate security tokens required to use the component in addition to simply using the component.
 
 Therefore, this document focuses primarily on a few details specific to using the component.
 These are:
@@ -24,15 +24,15 @@ As with the basic use of the component, the easiest way to understand theming an
 
 Install the component into your project:
 
-`npm install @finagraph/webwidgets-finconnector-react`
+`npm install @finagraph/finconnect-react`
 
 Import it into your application:
 
-`import StrongboxFinConnector from '@finagraph/webwidgets-finconnector-react';`
+`import StrongboxFinConnect from '@finagraph/finconnect-react';`
 
 Finally add it to your application's render function:
 
-    <StrongboxFinConnector
+    <StrongboxFinConnect
         orgId={'<Provide an ID that uniquely identifies the end user to you>'}
         orgName={'<Provide a name that you will recognize>'}
         accessToken={<access token>}
@@ -42,7 +42,7 @@ Finally add it to your application's render function:
         {(props) => {
             return undefined;
         }}
-    </StrongboxFinConnector>
+    </StrongboxFinConnect>
 
 `orgId` is required.  This should be an ID that has meaning to your system.  If you wish to use Strongbox API's that allow you to, for example, access the Excel spreadsheet produced for a customer, you would identify the customer by this ID.  It is the key for your customer.
 
@@ -62,7 +62,7 @@ This component does not actually wait for a job to complete.  It can take a very
 
 # Customizing available accounting packages
 
-By default, the `StrongboxFinConnector` component will show all the accounting packages it is capable of showing when the user chooses to connect with their accounting system. Further, for some packages that have multiple 'types' a small descriptor is shown under the package icon that describes specifically which package it applies to.  An example would be QuickBooks where the user may have either QuickBooks Online or QuickBooks Desktop.
+By default, the `StrongboxFinConnect` component will show all the accounting packages it is capable of showing when the user chooses to connect with their accounting system. Further, for some packages that have multiple 'types' a small descriptor is shown under the package icon that describes specifically which package it applies to.  An example would be QuickBooks where the user may have either QuickBooks Online or QuickBooks Desktop.
 
 The packages displayed and the descriptor that shows under the icons are configured through the `accountingPackages` property.
 
@@ -83,7 +83,7 @@ Use the `accountingPackages` property to configure which accounting packages are
 
 # Using the 'theme' property
 
-The `StrongboxFinConnector` component has an optional property called theme. This is how
+The `StrongboxFinConnect` component has an optional property called theme. This is how
 you pass settings that will change the appearance of the component.
 
 The `theme` property is a JSON object.  The type for theme is exported from the module 
@@ -189,7 +189,7 @@ You can customize most of the content that appears during the various steps of t
 
 A sample of using the component earlier in this document is:
 
-    <StrongboxFinConnector
+    <StrongboxFinConnect
         orgId={'<Provide an ID that uniquely identifies the end user to you>'}
         orgName={'<Provide a name that you will recognize>'}
         accessToken={<access token>}
@@ -197,7 +197,7 @@ A sample of using the component earlier in this document is:
         {(props) => {
             return undefined;
         }}
-    </StrongboxFinConnector>
+    </StrongboxFinConnect>
 
 Content customization is accomplished by replacing the child block and returning something other than undefined. When `undefined` is returned default content is used. So for example if you replace it with:
 

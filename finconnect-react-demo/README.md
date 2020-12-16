@@ -1,6 +1,6 @@
-# FinConnector Widget - Demo App
+# FinConnect Widget - Demo App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and contains some simple modifications to help you understand how to use the **FinConnector Widget**.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and contains some simple modifications to help you understand how to use the **FinConnect Widget**.
 
 # IMPORTANT
 
@@ -8,7 +8,7 @@ The sample contained in this project illustrates making calls to the Strongbox s
 
 # Overview
 
-This sample code demonstrates how to use the **FinConnector Widget** component that guides a user through the process of connecting Strongbox to their accounting system such that it can gather their financial information from the accounting system and provide analysis of that data to a financial institution partnered with Finagraph.
+This sample code demonstrates how to use the **FinConnect Widget** component that guides a user through the process of connecting Strongbox to their accounting system such that it can gather their financial information from the accounting system and provide analysis of that data to a financial institution partnered with Finagraph.
 
 The process is straight-forward and divided in to two parts. The first step is to generate an access token.  This token is generated for an organization that has partnered with Finagraph and has received a carefully guarded clientId and clientSecret that identifies the partner to Strongbox.
 
@@ -16,7 +16,7 @@ In the code below `componentDidMount` is devoted exclusively to this first step.
 
 The second step is to simply include the React component in your code.  The render method is devoted to showing what a simple credit application with the react component might look like.  When the user presses the button to connect their financial records they are allowed to choose from the supported accounting packages and connect Strongbox to their financial records.
 
-The majority of the code in render is devoted to showing a sample application. The `StrongboxFinConnector` component is imported from the component module and completely contained within `<StrongboxFinConnector...` in render.
+The majority of the code in render is devoted to showing a sample application. The `StrongboxFinConnect` component is imported from the component module and completely contained within `<StrongboxFinConnect...` in render.
 
 In this sample application the component is not displayed until a delegated access token has been created and is simply not present. An actual consumer is of course free to do this as well or show something that indicates it's loading, etc.
 

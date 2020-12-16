@@ -10,7 +10,7 @@
  * 
  * IMPORTANT: A couple values need to be replaced in this file.  Search for 'TODO'.
  * 
- * This sample code demonstrates how to use the Strongbox FinConnector react component
+ * This sample code demonstrates how to use the Strongbox FinConnect react component
  * that guides a user through the process of connecting Strongbox to their accounting
  * system such that it can gather their financial information from the accounting 
  * system and provide analysis of that data to a financial institution partnered with
@@ -33,8 +33,8 @@
  * to their financial records.
  * 
  * The majority of the code in render is devoted to showing a sample application.  
- * The 'StrongboxFinConnector' component is imported from the component module and completely contained
- * within <StrongboxFinConnector... in render.
+ * The 'StrongboxFinConnect' component is imported from the component module and completely contained
+ * within <StrongboxFinConnect... in render.
  * 
  * In this sample application the react component is not displayed until a delegated access
  * token has been created and is simply not present. An actual consumer is of course free to 
@@ -64,7 +64,7 @@
  * elements of appearance such as the radius of elements like buttons.
  * 
  * For experimenting with appearance, for example color, you can try this sample theme. You can just 
- * be able to cut and paste this as a prop following the strongboxUri prop on <StrongboxFinConnector... 
+ * be able to cut and paste this as a prop following the strongboxUri prop on <StrongboxFinConnect... 
  * below and see what the effect is:
  * 
                     theme={{
@@ -114,7 +114,7 @@
  * undefined is returned, that content will replace the default content.
  *
  * For experimenting with content you can try the sample below.  In the sample code where 
- * it returns undefined under <StrongboxFinConnector, you can replace that code with the following snippet.
+ * it returns undefined under <StrongboxFinConnect, you can replace that code with the following snippet.
  * to observe the effect.
  * 
                     {(props) => {
@@ -147,7 +147,7 @@ import './App.css';
 
 import React from 'react';
 
-import StrongboxFinConnector from '@finagraph/webwidgets-finconnector-react';
+import StrongboxFinConnect from '@finagraph/finconnect-react';
 
 /*
  * TODO Insert your API credentials below (clientId and clientSecret).
@@ -184,7 +184,7 @@ class App extends React.Component {
     componentDidMount() {
 
         /*
-         * To initialize the React Component <StrongboxFinConnector /> you will first need to obtain an access token that is safe to use from client-side code.
+         * To initialize the React Component <StrongboxFinConnect /> you will first need to obtain an access token that is safe to use from client-side code.
          * Obtaining that access token is a two step process that should be done server-side.  
          * 1) Send a POST request to /v1/token using your ClientId and ClientSecret to obtain an access token. This access token represents your full access to the Strongbox APIs.
          * 2) Send a POST request to /v1/DelegatedAccessTokens in order to exchange the access token that you aquired in step 1) for an access token that has very limited API access, designed specifically for powering this front-end component.
@@ -284,7 +284,7 @@ class App extends React.Component {
     }
 
     /*
-     * Right on, you've got everything you need to use the React Component (<StrongboxFinConnector />). Example below:
+     * Right on, you've got everything you need to use the React Component (<StrongboxFinConnect />). Example below:
      * 
      * Notice the optional property 'onJobCreated.'  When the user has selected an accounting package, logged in
      * and we have begun extracting their financial information to generate an Excel spreadsheet, this function
@@ -325,7 +325,7 @@ class App extends React.Component {
                     </div>
                     <p style={{ marginTop: '25px', marginLeft: '10px ' }}>Your review will be faster if you link your accounting system directly with our platform.</p>
                 </div>
-                <StrongboxFinConnector
+                <StrongboxFinConnect
                     orgId={orgId}
                     orgName={orgName}
                     accessToken={this.state.authorizationObject}
@@ -334,7 +334,7 @@ class App extends React.Component {
                     {(props) => {
                         return undefined;
                     }}
-                </StrongboxFinConnector>
+                </StrongboxFinConnect>
             </div>
         );
     }
