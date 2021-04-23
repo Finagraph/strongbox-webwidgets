@@ -240,14 +240,17 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
             return;
         }
 
-        try {
-            const webPortal = new WebPortalClient(props.accessToken, strongboxUri());
-            webPortal.initializeOrganization(props.orgId, new InitializeOrganizationParameters({ 'displayName': props.orgName }));
-        } catch (setNameException) {
+        const webPortal = new WebPortalClient(props.accessToken, strongboxUri());
+
+        webPortal.initializeOrganization(
+            props.orgId,
+            new InitializeOrganizationParameters({ 'displayName': props.orgName })
+        )
+        .catch(initException => {
             console.error(`Exception thrown setting the business name for orgId: ${props.orgId}, orgName: ${props.orgName}`);
-            console.error(setNameException);
+            console.error(initException);
             props.onFailureToSetBusinessName && props.onFailureToSetBusinessName();
-        }
+        });
     }, [props.orgName, props.orgId, props.accessToken]);
 
     return (<SBLinkAccountingPackage
