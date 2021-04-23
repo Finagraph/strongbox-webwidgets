@@ -5,12 +5,15 @@ import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
 import ProgressBar from './Progress/ProgressBar';
 import ProgressStep from './ProgressStep/ProgressStep';
 
+import { TextContent } from './TextContent/TextContent';
+
 export type LinkProgressProps = {
     theme?: Theme;
     onProgressComplete: () => void;
     children?: JSX.Element;
     onLinkPctgChange?: (pctComplete: number) => void;
     linkPctgComplete: number;
+    textContent: TextContent;
 }
 
 const LinkProgress: React.FC<LinkProgressProps> = (props: LinkProgressProps): React.ReactElement => {
@@ -75,19 +78,19 @@ const LinkProgress: React.FC<LinkProgressProps> = (props: LinkProgressProps): Re
             {!props.children && (
                 <div style={{ marginTop: '15px' }}>
                     <ProgressStep
-                        prompt={'Establishing secure connection'}
+                        prompt={props.textContent.TextValue('EstablishingSecureConnection')}
                         progressThreshold={25}
                         currentProgress={props.linkPctgComplete}
                         theme={props.theme}
                     />
                     <ProgressStep
-                        prompt={'Gathering required information'}
+                        prompt={props.textContent.TextValue('GatheringRequiredInformation')}
                         progressThreshold={75}
                         currentProgress={props.linkPctgComplete}
                         theme={props.theme}
                     />
                     <ProgressStep
-                        prompt={'Delivering to your account manager'}
+                        prompt={props.textContent.TextValue('DeliveringToYourAccountMgr')}
                         progressThreshold={95}
                         currentProgress={props.linkPctgComplete}
                         theme={props.theme}

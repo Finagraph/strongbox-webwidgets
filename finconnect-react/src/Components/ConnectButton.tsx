@@ -19,6 +19,9 @@ export const ConnectButton: React.FC<Props> = (props): React.ReactElement => {
         case 'quickbooksonline':
             buttonImg = qbConnectImg;
             break;
+        case 'quickbooksdesktop':
+            buttonImg = qbConnectImg;
+            break;
         case 'xero':
             buttonImg = xeroImg;
             break;

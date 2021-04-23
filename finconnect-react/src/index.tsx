@@ -44,21 +44,40 @@ import './styles.scss'
 
 import LinkButton from './Components/LinkButton';
 import BorrowerContainer from './Components/BorrowerContainer';
-import { BorrowerState, BorrowerSteps, ControlState } from './Models/BorrowerState';
+import { BorrowerState, BorrowerSteps, ControlState } from './Components/BorrowerState';
+
+import {
+    DisconnectConnection,
+    FinancialsImport,
+    FindConnection,
+    GetFinancialsConnectionDescriptor,
+    LenderConnectionOptions,
+    LoadConnectWindow,
+    StrongboxConnectionDescriptor,
+} from './Components/Strongbox/ConnectStrongbox';
 
 import { BuildThemeStyle, Theme } from './Models/Theme/Theme';
 import { defaultFontStyleMap } from './Models/Theme/ThemeFont';
 import { defaultContainerStyleMap } from './Models/Theme/ThemeContainer';
+import { IDelegatedAccessToken } from './Models/Api/ClientBase';
 
-import { AccountingPackageToShow, SupportedAccountingPackages } from './Components/ChoosePackage';
+import { AccountingPackageToShow, SupportedAccountingPackages, SupportedAccountingPackagesList } from './Components/ChoosePackage';
 
 import { WebPortalClient } from './Models/Api/strongbox.client';
 
 import { LinkerModal } from './Components/StrongboxLinker/LinkerModal';
 import { InitializeOrganizationParameters } from './Models/Api/strongbox.models';
-import { IDelegatedAccessToken } from './Models/Api/ClientBase';
 
-const strongboxUrlConst = 'https://api.strongbox.link';
+import { TextContent, TextLanguages } from './Components/TextContent/TextContent';
+
+const strongboxNexusUrlConst = 'https://api.strongbox.link';
+
+// For running against test envioronment, pass 'runEnvironment' property to default export of
+// this module and pass the value of testEnvironmentName below as the value.
+
+const testEnvironmentName = 'finagraphtest';
+
+const strongboxNexusUrlConstTest = 'https://test.finagraphstrongbox.com';
 
 export {
     BorrowerSteps,
@@ -72,23 +91,49 @@ export type SBLinkAccountingPackageChildProps = {
 };
 
 type SBLinkAccountingPackageProps = {
+    accessToken: IDelegatedAccessToken;
+    accountingPackages?: AccountingPackageToShow[];
+    borrowerState: BorrowerState;
     children: (props: SBLinkAccountingPackageChildProps) => JSX.Element | undefined;
     className: string;
+    disabled?: boolean;
     entityId: string;
-    strongboxNexusUrl: string;
-    accessToken: IDelegatedAccessToken;
-    borrowerState: BorrowerState;
-    theme?: Theme,
+    language?: string;
+    onJobCreated?: (financialRecordId: string) => void;
     onLinkPackageClick: (event: React.MouseEvent) => void;
     onNextStep: (step: BorrowerSteps, goToStep?: BorrowerSteps) => void;
-    accountingPackages?: AccountingPackageToShow[];
-    disabled?: boolean;
-    onJobCreated?: (financialRecordId: string) => void;
+    onTermsAccepted: () => void;
+    partnerName: string;
     showConnectionDialog?: boolean;
+    strongboxNexusUrl: string;
+    theme?: Theme,
 }
 
 const SBLinkAccountingPackage: React.FC<SBLinkAccountingPackageProps> = (props: SBLinkAccountingPackageProps): React.ReactElement => {
     let divStyle: any = {};
+
+    // Get a valid language code supported by the widget.  Currently this is English or Spanish.
+    // 
+    // props.language contains the language code passed by the consumer. It can be undefined in
+    // which case English is used.  
+    //
+    // Return value is always a language code that is actually supported by the widget, i.e. it can
+    // be used as a parameter to the constructor for TextContent.
+
+    const GetLanguage = (): TextLanguages => {
+        if (!props.language) {
+            return 'en';
+        }
+
+        // split will generate an array of at least 1 element.
+        const languagePieces = props.language.split('-');
+
+        // At the moment just returning the highest level value of a language meaning we aren't
+        // delineating between local dialects, e.g. 'es-ar' (Argentinian Spanish) will just resolve
+        // to 'es'.
+
+        return (languagePieces[0] === 'es') ? 'es' : 'en';
+    }
 
     const [linkPctgComplete, setLinkPctgComplete] = React.useState<number>(0);
 
@@ -107,12 +152,23 @@ const SBLinkAccountingPackage: React.FC<SBLinkAccountingPackageProps> = (props: 
         });
     }
 
+    const useLanguage = GetLanguage();
+
+    const textContent = new TextContent(useLanguage);
+
     // The link element below is required for being able to use material-ui icons.
 
     return (
         <div style={divStyle} className={`finagraph-strongbox-borrower-portal ${props.className}`}>
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-            {props.borrowerState.state === ControlState.button && <LinkButton disabled={props.disabled} theme={props.theme} onClick={props.onLinkPackageClick} />}
+            {props.borrowerState.state === ControlState.button &&
+                <LinkButton
+                    disabled={props.disabled}
+                    theme={props.theme}
+                    onClick={props.onLinkPackageClick}
+                    textContent={textContent}
+                />
+            }
             {props.borrowerState.state === ControlState.borrower && (
                 <BorrowerContainer
                     accountingPackages={props.accountingPackages}
@@ -123,9 +179,15 @@ const SBLinkAccountingPackage: React.FC<SBLinkAccountingPackageProps> = (props: 
                     linkPctgComplete={linkPctgComplete}
                     onNextStep={props.onNextStep}
                     onLinkPctgChange={setLinkPctgComplete}
+                    partnerName={props.partnerName}
                     strongboxUri={props.strongboxNexusUrl}
                     onJobCreated={props.onJobCreated}
+                    onTermsAccepted={() => {
+                        props.onTermsAccepted();
+                        props.onNextStep(props.borrowerState.activeStep);
+                    }}
                     showConnectionDialog={props.showConnectionDialog}
+                    textContent={textContent}
                 >
                     {stepChildren}
                 </BorrowerContainer>
@@ -139,28 +201,36 @@ const SBLinkAccountingPackage: React.FC<SBLinkAccountingPackageProps> = (props: 
 // moment.
 
 export type ISBLinkAccountingPackageProps = {
+    accessToken: IDelegatedAccessToken;
+    accountingPackages?: AccountingPackageToShow[];
+    children: (props: SBLinkAccountingPackageChildProps) => JSX.Element | undefined;
     className?: string
+    disabled?: boolean;
+    language?: string;
+    onFailureToSetBusinessName?: (response?: Response) => void;
+    onJobCreated?: (financialRecordId: string) => void;
     orgId: string;
     orgName?: string;
-    accessToken: IDelegatedAccessToken;
-    theme?: Theme;
-    accountingPackages?: AccountingPackageToShow[];
-    disabled?: boolean;
-    children: (props: SBLinkAccountingPackageChildProps) => JSX.Element | undefined;
-    onFailureToSetBusinessName?: (response?: Response) => void;
+    partnerName: string;
     runEnvironment?: string;
-    onJobCreated?: (financialRecordId: string) => void;
+    theme?: Theme;
     showConnectionDialog?: boolean;
 }
 
 const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPackageProps): React.ReactElement => {
     const [borrowerState, setBorrowerState] = React.useState<BorrowerState>({
-        activeStep: BorrowerSteps.choosePackage,
+        activeStep: BorrowerSteps.acceptTerms,
         state: ControlState.button,
     });
 
+    const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
+
     const strongboxUri = (): string => {
-        let strongboxNexusUrl = strongboxUrlConst;
+        let strongboxNexusUrl = strongboxNexusUrlConst;
+
+        if (props.runEnvironment && (props.runEnvironment === testEnvironmentName)) {
+            strongboxNexusUrl = strongboxNexusUrlConstTest;
+        }
 
         return strongboxNexusUrl;
     }
@@ -170,35 +240,35 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
             return;
         }
 
-        try {
-            const webPortal = new WebPortalClient(props.accessToken, strongboxUri());
-            webPortal.initializeOrganization(props.orgId, new InitializeOrganizationParameters({ 'displayName': props.orgName }));
-        } catch (setNameException) {
+        const webPortal = new WebPortalClient(props.accessToken, strongboxUri());
+
+        webPortal.initializeOrganization(
+            props.orgId,
+            new InitializeOrganizationParameters({ 'displayName': props.orgName })
+        )
+        .catch(initException => {
             console.error(`Exception thrown setting the business name for orgId: ${props.orgId}, orgName: ${props.orgName}`);
-            console.error(setNameException);
+            console.error(initException);
             props.onFailureToSetBusinessName && props.onFailureToSetBusinessName();
-        }
+        });
     }, [props.orgName, props.orgId, props.accessToken]);
 
-
     return (<SBLinkAccountingPackage
+        accessToken={props.accessToken}
         accountingPackages={props.accountingPackages}
+        borrowerState={borrowerState}
         children={props.children}
         className={props.className || ''}
         disabled={props.disabled}
         entityId={props.orgId}
-        borrowerState={borrowerState}
-        accessToken={props.accessToken}
-        strongboxNexusUrl={strongboxUri()}
-        theme={props.theme}
+        language={props.language}
+        onJobCreated={props.onJobCreated}
         onLinkPackageClick={(event: React.MouseEvent): void => {
             setBorrowerState({
                 ...borrowerState,
                 state: ControlState.borrower,
             });
         }}
-        onJobCreated={props.onJobCreated}
-        showConnectionDialog={props.showConnectionDialog}
         onNextStep={(step: BorrowerSteps, goToStep?: BorrowerSteps): void => {
             let nextStep: BorrowerSteps;
             let controlState = ControlState.borrower;
@@ -208,6 +278,9 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
                 nextStep = goToStep;
             } else {
                 switch (step) {
+                    case BorrowerSteps.acceptTerms:
+                        nextStep = BorrowerSteps.choosePackage;
+                        break;
                     case BorrowerSteps.choosePackage:
                         nextStep = BorrowerSteps.progress;
                         break;
@@ -215,7 +288,7 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
                         nextStep = BorrowerSteps.congratulations;
                         break;
                     case BorrowerSteps.congratulations:
-                        nextStep = BorrowerSteps.choosePackage;
+                        nextStep = termsAccepted ? BorrowerSteps.choosePackage : BorrowerSteps.acceptTerms;
                         controlState = ControlState.button;
                         break;
                     default:
@@ -229,11 +302,25 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
                 activeStep: nextStep,
             });
         }}
+        onTermsAccepted={() => {
+            setTermsAccepted(true);
+        }}
+        partnerName={props.partnerName}
+        showConnectionDialog={props.showConnectionDialog === undefined ? true : props.showConnectionDialog}
+        strongboxNexusUrl={strongboxUri()}
+        theme={props.theme}
     />);
 }
 
 export default App
 export {
+    DisconnectConnection,
+    FinancialsImport,
+    FindConnection,
+    GetFinancialsConnectionDescriptor,
+    LenderConnectionOptions,
     LinkerModal,
+    LoadConnectWindow,
+    StrongboxConnectionDescriptor,
     Theme
 }

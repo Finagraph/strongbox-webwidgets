@@ -160,6 +160,12 @@ import StrongboxFinConnect from '@finagraph/finconnect-react';
 const clientId = "<YOUR CLIENT ID>";
 const clientSecret = "<YOUR CLIENT SECRET>";
 
+/**
+ * TODO Specify a 'partnerName' that identifies your organization to the user of the widget.
+ * For example, the 'partnerName' appears in the sentence "{partnerName} uses Strongbox to link your accounting system"
+*/
+const partnerName = "{YOUR NAME}";
+
 /*
  * TODO - Specify an orgId and orgName
  * To initialize the React component, you will also need to pass an identifier for the Organization
@@ -328,6 +334,7 @@ class App extends React.Component {
                 <StrongboxFinConnect
                     orgId={orgId}
                     orgName={orgName}
+                    partnerName={partnerName}
                     accessToken={this.state.authorizationObject}
                     onJobCreated={(financialRecordId) => { console.log(`An import job has been created, id = ${financialRecordId}`); }}
                 >

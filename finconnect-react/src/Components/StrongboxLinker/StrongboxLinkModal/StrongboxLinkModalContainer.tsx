@@ -1,21 +1,38 @@
 import * as React from 'react';
 
+import { AccountingPackage } from '../../../Models/AccountingPackages';
+import { IOpenableModal } from '../../../Models/IOpenableModal';
+import { LinkState } from '../../../Models/LinkerSession';
 
 import StrongboxLinkModal from './StrongboxLinkModal';
 import { Theme } from '../../../Models/Theme/Theme';
-import { IDelegatedAccessToken } from '../../../Models/Api/ClientBase';
-import { AccountingPackage } from '../../../Models/AccountingPackages';
-import { IOpenableModal } from '../../../Models/IOpenableModal';
+import {
+    IDelegatedAccessToken
+} from '../../../Models/Api/ClientBase';
+
+import { ConnectionRequestDescriptor } from '../../../Models/Api/strongbox.models';
+import { StrongboxConnectionDescriptor } from '../../Strongbox/ConnectStrongbox';
+
+import { TextContent } from '../../TextContent/TextContent';
 
 export interface IStrongboxLinkModalContainerProps {
     accountingPackage: AccountingPackage;
     entityId: string;
+    strongboxCxnRequestDescriptor?: ConnectionRequestDescriptor;
+    connectionRequestInfo?: StrongboxConnectionDescriptor;
     strongboxUrl: string;
     submissionId?: string;
-    accessToken: IDelegatedAccessToken;
+    delegatedAccessToken: IDelegatedAccessToken;
     theme?: Theme;
-    executeConnect: (accountingPackage: AccountingPackage) => void;
-    onRequestClose: (success: boolean) => void;
+    isAuthorized?: boolean;
+    checkAuthorizationStatus?: boolean;
+    executeConnect: (accountingPackage: AccountingPackage, connectionRequestId: string, connectionWindowHandle: Window | undefined) => void;
+    executeDisconnect?: () => void;
+    onRequestClose?: (success: boolean) => void;
+    disabled?: boolean;
+    errorMsg?: string;
+    isWorking?: boolean;
+    textContent?: TextContent;
 }
 
 type Props = IStrongboxLinkModalContainerProps;
@@ -35,7 +52,8 @@ class StrongboxLinkModalContainer extends React.PureComponent<Props, State> impl
         const {
             accountingPackage,
             entityId,
-            accessToken,
+            connectionRequestInfo,
+            delegatedAccessToken,
             strongboxUrl,
             submissionId,
             theme
@@ -49,14 +67,23 @@ class StrongboxLinkModalContainer extends React.PureComponent<Props, State> impl
             <StrongboxLinkModal
                 accountingPackage={accountingPackage}
                 entityId={entityId}
+                strongboxCxnRequestDescriptor={this.props.strongboxCxnRequestDescriptor}
+                connectionInfo={this.props.connectionRequestInfo}
                 onRequestClose={this.props.onRequestClose}
                 executeConnect={this.props.executeConnect}
+                executeDisconnect={this.props.executeDisconnect}
                 open={true}
                 strongboxUrl={strongboxUrl}
                 submissionId={submissionId}
-                accessToken={accessToken}
+                delegatedAccessToken={delegatedAccessToken}
                 theme={theme}
                 updateProgress={this.UpdateProgress}
+                isAuthorized={this.props.isAuthorized}
+                checkAuthorizationStatus={this.props.checkAuthorizationStatus}
+                disabled={this.props.disabled}
+                errorMsg={this.props.errorMsg}
+                isWorking={this.props.isWorking}
+                textContent={this.props.textContent}
             />
         );
     }
@@ -67,7 +94,10 @@ class StrongboxLinkModalContainer extends React.PureComponent<Props, State> impl
 
     public OpenModal = (): void => {
     }
-    
+
+    private UpdateLinkState = (jobId: string, linkState: LinkState): void => {
+    }
+
     private UpdateProgress = (progress: number): void => {
     }
 }

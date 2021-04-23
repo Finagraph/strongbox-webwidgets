@@ -11,6 +11,6 @@
 export type AccountingPkgPresentation = {
     featureName: AccountingPackage;
     descriptor: string | undefined;
-    linkFunc: () => void;
+    linkFunc?: () => void;
 };
 

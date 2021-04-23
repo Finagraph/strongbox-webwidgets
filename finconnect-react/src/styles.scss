@@ -16,70 +16,6 @@ $disabledButtonOpacity: 0.3;
 
 $colorBorders: #707070;
 
-.finagraph-strongbox-accounting-packages {
-    display: flex;
-    flex-direction: row;
-    width: auto;
-
-    .button-container {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-
-        .accounting-button {
-            height: 48px;
-            width: 48px;
-            padding: 0;
-            border: none;
-
-            img {
-                height: 100%;
-                width: 100%;
-                border-radius: 6px;
-                border: 1px solid $colorBorders;
-            }
-        }
-    }
-
-    .accounting-button:disabled {
-        opacity: $disabledButtonOpacity;
-    }
-}
-
-.finagraph-strongbox-accounting-pkg-connect-container {
-    all: unset;
-
-    .finagraph-strongbox-accounting-pkg-connect-button {
-        height: 38px;
-        width: 210px;
-        margin: 40px 0 16px 0;
-        background-color: gray;
-        color: transparent;
-        padding: 0 0 0 0;
-        border-radius: 0px;
-        border: none;
-    }
-
-    .finagraph-strongbox-accounting-pkg-connect-button:hover {
-        cursor: pointer;
-    }
-
-    img {
-        height: 34px;
-        width: 206px;
-        border-radius: 0px;
-        vertical-align: middle;
-    }
-
-    img:hover {
-        opacity: 0.75;
-    }
-
-    img:active {
-        transform: translate(1px, 1px);
-    }
-}
-
 
 .finagraph-strongbox-borrower-portal {
     all: unset;
@@ -223,5 +159,68 @@ $colorBorders: #707070;
 
     &.dark {
         background: rgba(0, 0, 0, 0.4);
+    }
+}
+.finagraph-strongbox-accounting-packages {
+    display: flex;
+    flex-direction: row;
+    width: auto;
+
+    .button-container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+
+        .accounting-button {
+            height: 48px;
+            width: 48px;
+            padding: 0;
+            border: none;
+
+            img {
+                height: 100%;
+                width: 100%;
+                border-radius: 6px;
+                border: 1px solid $colorBorders;
+            }
+        }
+    }
+
+    .accounting-button:disabled {
+        opacity: $disabledButtonOpacity;
+    }
+}
+
+.finagraph-strongbox-accounting-pkg-connect-container {
+    all: unset;
+
+    .finagraph-strongbox-accounting-pkg-connect-button {
+        height: 38px;
+        width: 210px;
+        margin: 40px 0 16px 0;
+        background-color: gray;
+        color: transparent;
+        padding: 0 0 0 0;
+        border-radius: 0px;
+        border: none;
+    }
+
+    .finagraph-strongbox-accounting-pkg-connect-button:hover {
+        cursor: pointer;
+    }
+
+    img {
+        height: 34px;
+        width: 206px;
+        border-radius: 0px;
+        vertical-align: middle;
+    }
+
+    img:hover {
+        opacity: 0.75;
+    }
+
+    img:active {
+        transform: translate(1px, 1px);
     }
 }

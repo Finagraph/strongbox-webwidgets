@@ -2,51 +2,51 @@
 import '../styles.scss'
 
 import ChoosePackage, { AccountingPackageToShow } from './ChoosePackage';
+import AcceptTerms from './AcceptTerms';
 import LinkProgress from './LinkProgress';
 import Congratulations from './Congratulations';
+import { BorrowerSteps } from './BorrowerState';
 import { LinkerModal } from './StrongboxLinker/LinkerModal';
 
-import { StartFinancialsImport } from '../Utils/ConnectStrongbox';
+import { TextContent } from './TextContent/TextContent';
+
+import {
+    GetFinancialsConnectionDescriptor,
+    LoadConnectWindow,
+    StartFinancialsImport,
+    StrongboxConnectionDescriptor
+} from './Strongbox/ConnectStrongbox';
 
 import { Theme } from '../Models/Theme/Theme';
-
-import { BorrowerSteps } from '../Models/BorrowerState';
+import {
+    AccountingPackage,
+} from '../Models/AccountingPackages';
 
 import {
     IDelegatedAccessToken
 } from '../Models/Api/ClientBase';
 
-import { AccountingPackage } from '../Models/AccountingPackages';
-
-type ConnectState = {
-    accountingPackage: AccountingPackage | undefined;
-    waitingForAuthorization: boolean;
-    cancelWaitAuthorization: boolean;
-    successfulConnection: boolean;
-    showLinkModal: boolean;
-}
-
-type ImportState = {
-    financialRecordId: string;
-    jobCreated: boolean;
-    authWindow: Window | undefined;
-    error: string | undefined;
-    detailedError: string | undefined;
-}
-
 export type BorrowerContainerProps = {
-    accountingPackages?: AccountingPackageToShow[];
-    entityId: string;
     accessToken: IDelegatedAccessToken;
-    theme?: Theme;
-    step: BorrowerSteps;
-    linkPctgComplete: number;
+    accountingPackages?: AccountingPackageToShow[];
     children: JSX.Element;
-    showConnectionDialog?: boolean;
-    onNextStep: (step: BorrowerSteps, goToStep?: BorrowerSteps) => void;
-    onLinkPctgChange: (pctComplete: number) => void;
-    strongboxUri: string;
+    entityId: string;
+    linkPctgComplete: number;
     onJobCreated?: (financialRecordId: string) => void;
+    onLinkPctgChange: (pctComplete: number) => void;
+    onNextStep: (step: BorrowerSteps, goToStep?: BorrowerSteps) => void;
+    onTermsAccepted: () => void;
+    partnerName: string;
+    showConnectionDialog?: boolean;
+    step: BorrowerSteps;
+    strongboxUri: string;
+    textContent: TextContent;
+    theme?: Theme;
+}
+
+type ErrorState = {
+    msg: string | undefined;
+    detailedMsg: string | undefined;
 }
 
 const BorrowerContainer: React.FC<BorrowerContainerProps> = (props: BorrowerContainerProps): React.ReactElement => {
@@ -57,130 +57,80 @@ const BorrowerContainer: React.FC<BorrowerContainerProps> = (props: BorrowerCont
         divStyle['backgroundColor'] = props.theme.palette.borrowerInteractionBackground;
     }
 
-    const [importState, setImportState] = React.useState<ImportState>({
-        financialRecordId: '',
-        jobCreated: false,
-        authWindow: undefined,
-        error: undefined,
-        detailedError: undefined,
+    const [connectionInfo, setConnectionInfo] = React.useState<StrongboxConnectionDescriptor | undefined>(undefined);
+    const [showingAuthWindow, setShowingAuthWindow] = React.useState<boolean>(false);
+    const [errorState, setErrorState] = React.useState<ErrorState>({
+        msg: undefined,
+        detailedMsg: undefined,
     });
-
-    const [connectState, setConnectState] = React.useState<ConnectState>({
-        accountingPackage: undefined,
-        waitingForAuthorization: false,
-        cancelWaitAuthorization: false,
-        successfulConnection: false,
-        showLinkModal: false,
-    });
-
-    const OnAuthWindowOpen = (authWindow: Window): void => {
-        setImportState({
-            ...importState,
-            authWindow: window,
-        });
-    }
-
-    const OnImportError = (msg: string, detailedMsg: string): void => {
-        setImportState({
-            ...importState,
-            error: msg,
-            detailedError: detailedMsg,
-            authWindow: undefined,
-        });
-        setConnectState({
-            accountingPackage: undefined,
-            waitingForAuthorization: false,
-            cancelWaitAuthorization: false,
-            successfulConnection: false,
-            showLinkModal: false,
-        });
-    }
 
     const OnJobCreated = (financialRecordId: string): void => {
-        setImportState({
-            ...importState,
-            financialRecordId,
-            jobCreated: true,
-            authWindow: undefined,
-        });
-        setConnectState({
-            accountingPackage: undefined,
-            waitingForAuthorization: false,
-            cancelWaitAuthorization: false,
-            successfulConnection: true,
-            showLinkModal: false,
+        props.onJobCreated && props.onJobCreated(financialRecordId);
+        setConnectionInfo(undefined);
+        setShowingAuthWindow(false);
+        props.onNextStep(props.step);
+    }
+
+    const OnError = (msg: string, detailedMsg: string): void => {
+        setConnectionInfo(undefined);
+        setShowingAuthWindow(false);
+        setErrorState({
+            msg,
+            detailedMsg,
         });
     }
 
-    const OnModalClosing = (): void => {
-        setImportState({
-            ...importState,
-            authWindow: undefined,
-        })
-        setConnectState({
-            accountingPackage: undefined,
-            waitingForAuthorization: false,
-            cancelWaitAuthorization: false,
-            successfulConnection: false,
-            showLinkModal: false,
-        });
+    const OnAborted = (): void => {
+        setConnectionInfo(undefined);
+        setShowingAuthWindow(false);
     }
-
-    React.useEffect(() => {
-        if ((connectState.accountingPackage) && (!connectState.showLinkModal)) {
-            StartFinancialsImport(
-                connectState.accountingPackage,
-                props.accessToken,
-                props.strongboxUri,
-                props.entityId,
-                OnImportError,
-                OnJobCreated,
-                OnModalClosing,
-                () => connectState.cancelWaitAuthorization,
-                OnAuthWindowOpen,
-            );
-        }
-    }, [connectState.accountingPackage]);
-
-    React.useEffect(() => {
-        if (importState.jobCreated) {
-            if (props.onJobCreated) {
-                props.onJobCreated(importState.financialRecordId);
-            }
-            props.onNextStep(props.step);
-        }
-    }, [importState]);
 
     const ConnectToAccountingPackage = (accountingPackage: AccountingPackage): void => {
-        setConnectState({
+        const connectionInfo: StrongboxConnectionDescriptor = {
             accountingPackage,
-            cancelWaitAuthorization: false,
-            waitingForAuthorization: true,
-            successfulConnection: false,
-            showLinkModal: !!props.showConnectionDialog,
-        });
-    }
+            delegatedAccessToken: props.accessToken,
+            strongboxUri: props.strongboxUri,
+            orgId: props.entityId,
+            existingConnectionId: undefined,
+            submissionId: undefined,
+            initiator: 'widget',
+        };
 
-    const ExecuteConnect = (accountingPackage: AccountingPackage): void => {
-        setConnectState({
-            ...connectState,
-            showLinkModal: false,
-        });
-        StartFinancialsImport(
-            accountingPackage,
-            props.accessToken,
-            props.strongboxUri,
-            props.entityId,
-            OnImportError,
-            OnJobCreated,
-            OnModalClosing,
-            () => connectState.cancelWaitAuthorization,
-            OnAuthWindowOpen
-        );
-    }
+        if (!!props.showConnectionDialog) {
+            setConnectionInfo(connectionInfo);
+        } else {
+            const cxnWindowHandle = LoadConnectWindow(connectionInfo, undefined);
 
-    const focusAuthWindow = (): void => {
-        importState.authWindow && importState.authWindow.onchange
+            if (!cxnWindowHandle) {
+                setErrorState({
+                    msg: props.textContent.TextValue('StartFinancialsCreateWindowSummaryError'),
+                    detailedMsg: '',
+                });
+            } else {
+                GetFinancialsConnectionDescriptor(
+                    connectionInfo,
+                    (msg: string, detailedMsg: string): void => { }
+                )
+                    .then(cxnDescriptor => {
+                        if (cxnDescriptor) {
+                            cxnWindowHandle.location.href = cxnDescriptor.connectionEndpoint || '';
+
+                            setShowingAuthWindow(true);
+
+                            StartFinancialsImport(
+                                connectionInfo,
+                                cxnDescriptor,
+                                cxnWindowHandle,
+                                OnError,
+                                OnJobCreated,
+                                OnAborted,
+                                () => { return false },
+                                props.textContent
+                            );
+                        }
+                    });
+            }
+        }
     }
 
     const ProgressComplete = (): void => {
@@ -191,7 +141,7 @@ const BorrowerContainer: React.FC<BorrowerContainerProps> = (props: BorrowerCont
         props.onNextStep(props.step);
     }
 
-    const AbortChoosePackage = (): void => {
+    const AbortIntroPages = (): void => {
         props.onNextStep(BorrowerSteps.congratulations);
     }
 
@@ -205,16 +155,26 @@ const BorrowerContainer: React.FC<BorrowerContainerProps> = (props: BorrowerCont
 
     return (
         <div style={divStyle} className={containerClassName}>
-
+            {props.step === BorrowerSteps.acceptTerms && (
+                <AcceptTerms
+                    abort={AbortIntroPages}
+                    onTermsAccepted={props.onTermsAccepted}
+                    partnerName={props.partnerName}
+                    textContent={props.textContent}
+                    theme={props.theme}
+                />
+            )}
             {props.step === BorrowerSteps.choosePackage && (
                 <ChoosePackage
-                    abort={AbortChoosePackage}
+                    abort={AbortIntroPages}
                     accountingPackages={props.accountingPackages}
                     theme={props.theme}
                     showLinkDialog={ConnectToAccountingPackage}
                     children={props.children}
-                    showError={importState.error}
-                    authWindowActive={!!importState.authWindow}
+                    showError={errorState.msg}
+                    authWindowActive={!!connectionInfo || showingAuthWindow}
+                    buttonsDisabled={!!connectionInfo || showingAuthWindow}
+                    textContent={props.textContent}
                 />
             )}
             {props.step === BorrowerSteps.progress && (
@@ -224,6 +184,7 @@ const BorrowerContainer: React.FC<BorrowerContainerProps> = (props: BorrowerCont
                     children={props.children}
                     linkPctgComplete={props.linkPctgComplete}
                     onLinkPctgChange={props.onLinkPctgChange}
+                    textContent={props.textContent}
                 />
             )}
             {props.step === BorrowerSteps.congratulations && (
@@ -231,18 +192,20 @@ const BorrowerContainer: React.FC<BorrowerContainerProps> = (props: BorrowerCont
                     theme={props.theme}
                     onDone={CongratsComplete}
                     children={props.children}
+                    textContent={props.textContent}
                 />
             )}
             {props.children}
-            {connectState.showLinkModal && connectState.accountingPackage && 
+            {!!connectionInfo &&
                 <LinkerModal
-                    accountingPackage={connectState.accountingPackage}
-                    accessToken={props.accessToken}
-                    orgId={props.entityId}
-                    strongboxUri={props.strongboxUri}
+                    connectionInfo={connectionInfo}
                     theme={props.theme}
-                    executeConnect={ExecuteConnect}
-                    onCompleted={OnModalClosing}
+                    onCompleted={(success: boolean) => {
+                        setConnectionInfo(undefined);
+                    }}
+                    onJobCreated={OnJobCreated}
+                    checkAuthorizationStatus={false}
+                    textContent={props.textContent}
                 />
             }
         </div>

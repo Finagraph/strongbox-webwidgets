@@ -3,7 +3,7 @@ import '../../styles.scss'
 
 import CheckIcon from '@material-ui/icons/CheckRounded';
 
-import { Theme } from '../../Models/Theme/Theme';
+import { BuildThemeStyle, Theme } from '../../Models/Theme/Theme';
 
 const ProgressStep: React.FC<{
     prompt: string,
