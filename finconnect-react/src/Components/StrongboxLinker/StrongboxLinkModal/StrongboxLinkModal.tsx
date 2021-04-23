@@ -2,46 +2,88 @@ import './StrongboxLinkModal.scss';
 
 import * as React from 'react';
 
+import { AccountingPackage } from '../../../Models/AccountingPackages';
+import {
+    IDelegatedAccessToken
+} from '../../../Models/Api/ClientBase';
+
+import { StrongboxConnectionDescriptor } from '../../Strongbox/ConnectStrongbox';
 import { SimpleModal } from '../../StrongboxModal';
 import StrongboxLinker, { StrongboxLinkerChildProps } from '../../StrongboxLinker/StrongboxLinker';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { AccountingPackageConnectPrompt } from '../../../Utils/LinkUtils';
+
+import LoadingIndicator from '../../LoadingIndicator/LoadingIndicator';
 
 import { BuildThemeStyle, Theme } from '../../../Models/Theme/Theme';
 import { defaultControlFontStyleMap, defaultModalRegularFontStyleMap, defaultModalSecurityFontStyleMap } from '../../../Models/Theme/ThemeFont';
 import { defaultControlPaletteStyleMap } from '../../../Models/Theme/ThemePalette';
 import { defaultControlStyleMap } from '../../../Models/Theme/ThemeControls';
-import { AccountingPackage } from '../../../Models/AccountingPackages';
-import { IDelegatedAccessToken } from '../../../Models/Api/ClientBase';
-import { AccountingPackageConnectPrompt } from '../../../Utils/LinkUtils';
-import { CreateStdTheme } from '../../../Utils/Style';
+import { ConnectionRequestDescriptor } from '../../../Models/Api/strongbox.models';
+
+import { TextContent } from '../../TextContent/TextContent';
+import { translations } from '../../TextContent/en/en';
 
 type Props = {
     accountingPackage: AccountingPackage;
     entityId: string;
+    strongboxCxnRequestDescriptor?: ConnectionRequestDescriptor,
+    connectionInfo?: StrongboxConnectionDescriptor,
     onJobCreated?: (financialRecordId: string) => void;
-    onRequestClose: (success: boolean) => void;
+    onRequestClose?: ((success: boolean) => void);
     open: boolean;
     strongboxUrl: string;
     submissionId?: string;
-    accessToken: IDelegatedAccessToken;
+    delegatedAccessToken: IDelegatedAccessToken;
     theme?: Theme;
     updateProgress: (progress: number) => void;
-    executeConnect: (accountingPackage: AccountingPackage) => void;
+    executeConnect: (accountingPackage: AccountingPackage, connectionRequestId: string, connectionWindowHandle: Window | undefined) => void;
+    executeDisconnect?: () => void;
+    isAuthorized?: boolean;
+    checkAuthorizationStatus?: boolean;
+    disabled?: boolean;
+    errorMsg?: string;
+    isWorking?: boolean;
+    textContent?: TextContent;
 };
 
-class StrongboxLinkModal extends React.PureComponent<Props> {
+type State = {
+    descriptionTextQBO: string;
+    descriptionTextQBD: string;
+    descriptionTextXero: string;
+    qbOneWay: string;
+    xeroOneWay: string;
+    working: string;
+    updateFinancialsNow: string;
+    disconnect: string;
+};
+
+class StrongboxLinkModal extends React.PureComponent<Props, State> {
     public static defaultProps = {
         open: false,
+        isAuthorized: false,
+        checkAuthorizationStatus: false,
+        textContent: new TextContent('en'),
     };
 
     constructor(props: Props) {
         super(props);
 
+        this.state = {
+            descriptionTextQBO: translations.LinkModalDescriptionQBO,
+            descriptionTextQBD: translations.LinkModalDescriptionQBD,
+            descriptionTextXero: translations.LinkModalDescriptionXero,
+            qbOneWay: translations.LinkModalQBOneWay,
+            xeroOneWay: translations.LinkModalXeroOneWay,
+            working: translations.LinkModalWorking,
+            updateFinancialsNow: translations.LinkModalUpdateFinancialsNow,
+            disconnect: translations.DisconnectFromAccountingPkg,
+        }
+
         this.RenderAccountingPackage = this.RenderAccountingPackage.bind(this);
         this.RenderConnectToQuickBooks = this.RenderConnectToQuickBooks.bind(this);
         this.RenderConnectToXero = this.RenderConnectToXero.bind(this);
+        this.RenderConnectToQuickBooksDesktop = this.RenderConnectToQuickBooksDesktop.bind(this);
     }
 
     private _regularTextStyle: any = {};
@@ -67,21 +109,20 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
             this.props.theme
         );
         this._securityTextStyle = BuildThemeStyle(this._securityTextStyle, defaultModalSecurityFontStyleMap, this.props.theme);
+
+        if (this.props.textContent) {
+            this.setState({
+                descriptionTextQBO: this.props.textContent.TextValue('LinkModalDescriptionQBO'),
+                descriptionTextQBD: this.props.textContent.TextValue('LinkModalDescriptionQBD'),
+                descriptionTextXero: this.props.textContent.TextValue('LinkModalDescriptionXero'),
+                qbOneWay: this.props.textContent.TextValue('LinkModalQBOneWay'),
+                xeroOneWay: this.props.textContent.TextValue('LinkModalXeroOneWay'),
+                working: this.props.textContent.TextValue('LinkModalWorking'),
+                updateFinancialsNow: this.props.textContent.TextValue('LinkModalUpdateFinancialsNow'),
+                disconnect: this.props.textContent.TextValue('DisconnectFromAccountingPkg'),
+            });
+        }
     }
-
-/*
- * MODIFICATIONS FOR XERO UI
- * 
- * Show xero descriptions where appropriate
- */
-    
-    private _descriptionText = 'After clicking \'Connect to QuickBooks\', Intuit will prompt you to ' +
-        'authorize a connection to QuickBooks. This will allow your information to be sent to your lender ' +
-        'and you\'ll be on your way!';
-
-    private _descriptionTextXero = 'After clicking \'Connect to Xero\', Xero will prompt you to ' +
-        'authorize a connection to Xero. This will allow your information to be sent to your lender ' +
-        'and you\'ll be on your way!';
 
     public render() {
         const {
@@ -92,17 +133,25 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
 
         return open && (
             <StrongboxLinker
+                strongboxCxnRequestDescriptor={this.props.strongboxCxnRequestDescriptor}
+                connectionInfo={this.props.connectionInfo}
                 autoStartOnAuthorized={true}
                 datasourceId={this.props.accountingPackage}
                 theme={this.props.theme}
                 executeConnect={this.props.executeConnect}
+                executeDisconnect={this.props.executeDisconnect}
+                isAuthorized={this.props.isAuthorized}
+                errorMsg={this.props.errorMsg}
+                isWorking={this.props.isWorking}
+                disabled={this.props.disabled}
+                checkAuthorizationStatus={this.props.checkAuthorizationStatus}
             >
                 {(props): JSX.Element => {
                     let buttonStyle = BuildThemeStyle({}, defaultControlPaletteStyleMap, props.theme);
                     buttonStyle = BuildThemeStyle(buttonStyle, defaultControlFontStyleMap, props.theme);
                     buttonStyle = BuildThemeStyle(buttonStyle, defaultControlStyleMap, props.theme);
 
-                    const actions = props.authorized ? 
+                    const actions = props.authorized ?
                         [
                             <button
                                 style={buttonStyle}
@@ -110,51 +159,28 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
                                 onClick={() => {
                                     props.disconnect();
                                 }}
+                                disabled={!this.props.errorMsg && this.props.disabled}
                             >
-                                Disconnect
+                                {this.state.disconnect}
                             </button>,
                         ] :
                         undefined;
 
                     const GetAuthorizedContent = (): React.ReactNode => {
-                        if (props.disconnecting) {
-                            return (
-                                <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                }}>
-                                    <span style={{ ...this._regularTextStyle, marginBottom: '20px' }}>Disconnecting</span>
-                                    <CircularProgress
-                                        color="primary"
-                                    />
-                                </div>
-                            );
-                        } else {
-                            return (
+                        // Really, the only way we would get here is if connectionInfo and existingConnectionId
+                        // both exist so the || '' clause below is (or should be) impossible but the compiler
+                        // doesn't like it.
+                        return (
+                            <div>
                                 <button
                                     style={buttonStyle}
                                     onClick={() => {
-                                        props.startJob();
+                                        props.startJob((this.props.connectionInfo && this.props.connectionInfo.existingConnectionId) || (''));
                                     }}
+                                    disabled={this.props.disabled}
                                 >
-                                    Update Financials Now
+                                    {this.state.updateFinancialsNow}
                                 </button>
-                            );
-                        }
-                    }
-
-                    const RenderProgress = (): React.ReactNode => {
-                        if (props.errorState !== 'none') {
-                            return (<></>);
-                        }
-                        return (
-                            <div style={{
-                                marginBottom: '20px',
-                            }}>
-                                <CircularProgress
-                                    color="primary"
-                                />
                             </div>
                         );
                     }
@@ -164,7 +190,19 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
                             <div style={{
                                 marginBottom: '20px',
                             }}>
-                                <p>An unexpected error has occurred. This is most likely due to a required service being unavailable. Please try this operation again later</p>
+                                <p>Sorry, there has been a problem.</p>
+                                {!!props.errorMsg && (<p>Additional information: {props.errorMsg}</p>)}
+                            </div>
+                        );
+                    }
+
+                    const RenderWorkingState = (): React.ReactNode => {
+                        return (
+                            <div style={{
+                                marginTop: '20px',
+                                marginBottom: '20px',
+                            }}>
+                                <h1>{this.state.working}</h1>
                             </div>
                         );
                     }
@@ -172,41 +210,29 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
                     return (
                         <SimpleModal
                             actions={actions}
-                            className={`finagraph-strongbox-linker__link-modal ${props.initialized ? '' : 'loading'}`}
+                            className={`finagraph-strongbox-linker__link-modal ${props.isWorking ? 'loading' : ''}`}
                             contentClassName={''}
                             closeOnOverlayClick={false}
                             onCancelLabel={'Cancel'}
                             onClose={(): void => {
-                                onRequestClose(false);
+                                onRequestClose && onRequestClose(false);
                             }}
                             theme={props.theme}
-                            title={AccountingPackageConnectPrompt(this.props.accountingPackage)}
+                            title={AccountingPackageConnectPrompt(this.props.accountingPackage, this.props.textContent)}
+                            disableActions={this.props.disabled}
                         >
-                            <ThemeProvider theme={CreateStdTheme()} >
-                                <div
-                                    className={'finagraph-strongbox-link-modal__content-container'}>
-                                    {props.errorState !== 'none' && RenderErrorState()}
-                                    {props.initialized && props.authorized && GetAuthorizedContent()}
-                                    {props.initialized && !props.authorized && this.RenderAccountingPackage(props)}
-                                    {!props.initialized && RenderProgress()}
-                                </div>
-                            </ThemeProvider>
+                            <div className={'finagraph-strongbox-link-modal__content-container'}>
+                                {!props.errorMsg && props.disabled && <LoadingIndicator active={true} overlayType={LoadingIndicator.OverlayType.Dark} />}
+                                {!!props.errorMsg && RenderErrorState()}
+                                {!props.errorMsg && !!props.isWorking && RenderWorkingState()}
+                                {!(props.errorMsg || props.isWorking) && props.authorized && GetAuthorizedContent()}
+                                {!(props.errorMsg || props.isWorking) && !props.authorized && this.RenderAccountingPackage(props)}
+                            </div>
                         </SimpleModal>
                     );
                 }}
             </StrongboxLinker>
         );
-    }
-
-    private OnError = (msg: string, detailedMsg: string): void => {
-    }
-
-    private OnCompleted = (success: boolean): void => {
-
-    }
-
-    private isCancelled = (): boolean => {
-        return false;
     }
 
     private RenderConnectToQuickBooks = (props: StrongboxLinkerChildProps): React.ReactNode => {
@@ -215,12 +241,26 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
                     <SVG src={'https://booyamiflight.blob.core.windows.net/static/ConnectToQuickBooks.svg'} />
                 </div>
          */
+
         return (
             <>
-                <span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>{this._descriptionText}</span>
+                <span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>{this.state.descriptionTextQBO}</span>
                 <span style={this._securityTextStyle} className={'finagraph-strongbox-linker__connect-graphic-description secondary'}>
-                    Information in QuickBooks will never be altered in any way. This is a fully secure, one-way data
-                    stream. 
+                    {this.state.qbOneWay}
+                </span>
+                {props.renderAuthButton({
+                    className: 'finagraph-strongbox-linker__auth-button',
+                })}
+            </>
+        );
+    }
+
+    private RenderConnectToQuickBooksDesktop = (props: StrongboxLinkerChildProps): React.ReactNode => {
+        return (
+            <>
+                <span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>{this.state.descriptionTextQBD}</span>
+                <span style={this._securityTextStyle} className={'finagraph-strongbox-linker__connect-graphic-description secondary'}>
+                    {this.state.qbOneWay}
                 </span>
                 {props.renderAuthButton({
                     className: 'finagraph-strongbox-linker__auth-button',
@@ -232,10 +272,9 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
     private RenderConnectToXero = (props: StrongboxLinkerChildProps): React.ReactNode => {
         return (
             <>
-                <span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>{this._descriptionTextXero}</span>
+                <span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>{this.state.descriptionTextXero}</span>
                 <span style={this._securityTextStyle} className={'finagraph-strongbox-linker__connect-graphic-description secondary'}>
-                    Information in Xero will never be altered in any way. This is a fully secure, one-way data
-                    stream. 
+                    {this.state.xeroOneWay}
                 </span>
                 {props.renderAuthButton({
                     className: 'finagraph-strongbox-linker__auth-button',
@@ -247,8 +286,12 @@ class StrongboxLinkModal extends React.PureComponent<Props> {
     private RenderAccountingPackage = (props: StrongboxLinkerChildProps): React.ReactNode => {
         if (this.props.accountingPackage === AccountingPackage.Xero) {
             return this.RenderConnectToXero(props);
-        } else {
+        } else if (this.props.accountingPackage === AccountingPackage.QuickBooksDesktop) {
+            return this.RenderConnectToQuickBooksDesktop(props);
+        } else if (this.props.accountingPackage === AccountingPackage.QuickBooksOnline) {
             return this.RenderConnectToQuickBooks(props);
+        } else {
+            return (<span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>Unknown Accounting Package</span>);
         }
     }
 }

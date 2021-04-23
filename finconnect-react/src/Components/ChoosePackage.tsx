@@ -1,18 +1,30 @@
 ﻿import * as React from 'react'
 import '../styles.scss'
 
-import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
-import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
-import { generalWindowBackground, paragraphText } from '../Models/Theme/Colors';
-
-import ContractIcon from '@material-ui/icons/ExpandLessRounded';
-import { AccountingPackage, AccountingPkgPresentation } from '../Models/AccountingPackages';
-
+import {
+    AccountingPackage,
+    AccountingPkgPresentation
+} from '../Models/AccountingPackages';
 import { AccountingPackages } from './AccountingPackages';
 
+import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
+import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
+import { generalWindowBackground, paragraphText } from './Colors';
+
+import { TextContent } from './TextContent/TextContent';
+
+import IntroBanner from './IntroBanner';
+
 export type SupportedAccountingPackages =
+    AccountingPackage.QuickBooksDesktop |
     AccountingPackage.QuickBooksOnline |
     AccountingPackage.Xero;
+
+export const SupportedAccountingPackagesList: AccountingPackage[] = [
+    AccountingPackage.QuickBooksDesktop,
+    AccountingPackage.QuickBooksOnline,
+    AccountingPackage.Xero,
+];
 
 export type AccountingPackageToShow = {
     descriptor?: string;
@@ -26,21 +38,12 @@ export type ChoosePackageProps = {
     showLinkDialog: (accountingPackage: AccountingPackage) => void;
     children?: JSX.Element;
     showError?: string | undefined;
+    textContent: TextContent;
     authWindowActive: boolean;
+    buttonsDisabled: boolean;
 }
 
 const ChoosePackage: React.FC<ChoosePackageProps> = (props: ChoosePackageProps): React.ReactElement => {
-    const headerStyle = BuildThemeStyle(
-        {},
-        {
-            container: 'font',
-            map: [
-                { containerName: 'size_h1', styleName: 'fontSize' },
-                { containerName: 'weight_h1', styleName: 'fontWeight' }
-            ]
-        },
-        props.theme
-    );
     let buttonStyle = BuildThemeStyle({ border: 'none', color: paragraphText },
         {
             container: 'palette',
@@ -55,26 +58,18 @@ const ChoosePackage: React.FC<ChoosePackageProps> = (props: ChoosePackageProps):
     }
     buttonStyle = BuildThemeStyle(buttonStyle, defaultControlStyleMap, props.theme);
 
-    let pushButtonStyle = BuildThemeStyle({}, defaultControlStyleMap, props.theme);
-
-    const QuickBooksOnlineLink = (): void => {
-        props.showLinkDialog(AccountingPackage.QuickBooksOnline);
-    }
-
-    const XeroLink = (): void => {
-        props.showLinkDialog(AccountingPackage.Xero);
-    }
-
     const fullAccountingPackages: AccountingPkgPresentation[] = [
         {
             featureName: AccountingPackage.QuickBooksOnline,
-            descriptor: 'Online',
-            linkFunc: QuickBooksOnlineLink,
+            descriptor: props.textContent.TextValue('QBOnline'),
+        },
+        {
+            featureName: AccountingPackage.QuickBooksDesktop,
+            descriptor: props.textContent.TextValue('QBDesktop'),
         },
         {
             featureName: AccountingPackage.Xero,
             descriptor: undefined,
-            linkFunc: XeroLink,
         }
     ]
 
@@ -104,30 +99,17 @@ const ChoosePackage: React.FC<ChoosePackageProps> = (props: ChoosePackageProps):
     }, [props.accountingPackages]);
 
     const PackageInvoke = (accountingPackage: AccountingPkgPresentation): void => {
-        accountingPackage.linkFunc();
+        props.showLinkDialog(accountingPackage.featureName);
     }
 
     return (
         <>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-            }}>
-                <h1 style={headerStyle}>Securely Submit Financial Data</h1>
-                <button
-                    style={{
-                        ...buttonStyle,
-                        height: '40px',
-                        padding: '8px 8px 12px 8px',
-                    }}
-                    disabled={props.authWindowActive}
-                    onClick={props.abort}
-                >
-                    <ContractIcon />
-                </button>
-            </div>
+            <IntroBanner
+                theme={props.theme}
+                textContent={props.textContent}
+                authWindowActive={props.authWindowActive}
+                abort={props.abort}
+            />
             { props.showError && (
                 <p style={{
                     color: "red",
@@ -145,22 +127,19 @@ const ChoosePackage: React.FC<ChoosePackageProps> = (props: ChoosePackageProps):
                 style={{
                     marginTop: '10px',
                 }}
-                buttonsDisabled={props.authWindowActive}
+                buttonsDisabled={props.buttonsDisabled}
                 accountingPackages={activeAccountingPackages}
                 onPackageInvoke={PackageInvoke}
             />
             {!(props.children) && (
                 <div style={{ marginTop: '15px' }}>
-                    <p>
-                        Click on your accounting package above to authorize a secure connection to the
-                        financial data needed to fulfill your application
-                    </p>
+                    <p>{props.textContent.TextValue('ClickYourAccountingPackage')}</p>
                     <ul>
-                        <li>Profit & Loss Statements</li>
-                        <li>Balance Sheets</li>
-                        <li>Transaction Data</li>
+                        <li>{props.textContent.TextValue('PNLStatements')}</li>
+                        <li>{props.textContent.TextValue('BalanceSheets')}</li>
+                        <li>{props.textContent.TextValue('TransactionData')}</li>
                     </ul>
-                    <p>Note: Strongbox does NOT gather personal information such as Social Security Numbers</p>
+                    <p>{props.textContent.TextValue('NoteNoPersonalInformation')}</p>
                 </div>
             )}
         </>

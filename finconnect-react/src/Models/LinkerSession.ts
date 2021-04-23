@@ -1,4 +1,4 @@
-export enum LinkState {
+﻿export enum LinkState {
     LinkingNotInitiated,
     LinkingInProgress,
     LinkingComplete,

@@ -7,10 +7,13 @@ import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
 import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
 import { defaultControlPaletteStyleMap } from '../Models/Theme/ThemePalette';
 
+import { TextContent } from './TextContent/TextContent';
+
 export type CongratulationsProps = {
     theme?: Theme;
     onDone: () => void;
     children?: JSX.Element;
+    textContent: TextContent;
 }
 
 const Congratulations: React.FC<CongratulationsProps> = (props: CongratulationsProps): React.ReactElement => {
@@ -29,10 +32,10 @@ const Congratulations: React.FC<CongratulationsProps> = (props: CongratulationsP
                 height: '48px'
             }} />
             {!(props.children) && (
-                <p>Your financial data has been submitted!</p>
+                <p>{props.textContent.TextValue('YourDataIsSubmitted')}</p>
             )}
             <button style={buttonStyle} onClick={props.onDone}>
-                Done
+                {props.textContent.TextValue('Done')}
             </button>
         </>
     );

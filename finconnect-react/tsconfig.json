@@ -16,6 +16,6 @@
         "noImplicitAny": false,
         "strictNullChecks": true
     },
-    "include": [ "src","img.d.ts" ],
+    "include": [ "src", "img.d.ts", "svgimg.d.ts" ],
     "exclude": [ "node_modules", "dist", "rollup.config.js" ]
 }

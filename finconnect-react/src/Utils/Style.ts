@@ -19,3 +19,16 @@ export function CreateStdTheme(): Theme {
         }
     }));
 }
+
+export function CreateCustomTheme(primary: string, secondary: string): Theme {
+    return (createMuiTheme({
+        palette: {
+            primary: {
+                main: primary,
+            },
+            secondary: {
+                main: secondary,
+            }
+        }
+    }));
+}
