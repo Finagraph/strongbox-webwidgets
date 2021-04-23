@@ -1,5 +1,5 @@
 ﻿import * as React from 'react'
-import '.../styles.scss'
+import '../styles.scss'
 
 import ChoosePackage, { AccountingPackageToShow } from './ChoosePackage';
 import AcceptTerms from './AcceptTerms';
