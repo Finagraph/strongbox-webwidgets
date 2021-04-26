@@ -72,13 +72,6 @@ import { TextContent, TextLanguages } from './Components/TextContent/TextContent
 
 const strongboxNexusUrlConst = 'https://api.strongbox.link';
 
-// For running against test envioronment, pass 'runEnvironment' property to default export of
-// this module and pass the value of testEnvironmentName below as the value.
-
-const testEnvironmentName = 'finagraphtest';
-
-const strongboxNexusUrlConstTest = 'https://test.finagraphstrongbox.com';
-
 export {
     BorrowerSteps,
     AccountingPackageToShow,
@@ -212,9 +205,9 @@ export type ISBLinkAccountingPackageProps = {
     orgId: string;
     orgName?: string;
     partnerName: string;
-    runEnvironment?: string;
     theme?: Theme;
     showConnectionDialog?: boolean;
+    strongboxUrlOverride?: string;
 }
 
 const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPackageProps): React.ReactElement => {
@@ -226,13 +219,7 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
     const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
 
     const strongboxUri = (): string => {
-        let strongboxNexusUrl = strongboxNexusUrlConst;
-
-        if (props.runEnvironment && (props.runEnvironment === testEnvironmentName)) {
-            strongboxNexusUrl = strongboxNexusUrlConstTest;
-        }
-
-        return strongboxNexusUrl;
+        return props.strongboxUrlOverride || strongboxNexusUrlConst;
     }
 
     React.useEffect(() => {
