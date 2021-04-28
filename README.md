@@ -7,4 +7,4 @@ The **Strongbox FinConnect Widget** makes it simple for your customer to connect
 This widget is currently available for websites using [React](https://reactjs.org/). Checkout the links below to get started.
 
 - [Source](/finconnect-react)
-- [Demo Application](/finconnect-react-demo)
+- [Sample Application](/finconnect-react-demo)
