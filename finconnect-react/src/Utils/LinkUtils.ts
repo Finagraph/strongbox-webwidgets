@@ -1,7 +1,7 @@
 ﻿import { AccountingPackage } from '../Models/AccountingPackages';
 
-import { TextContent } from '../Components/TextContent/TextContent';
-import { translations } from '../Components/TextContent/en/en';
+import { TextContent } from '../Text/TextContent';
+import { translations } from '../Text/en/en';
 
 export type DesktopAuthResponse = {
     codeChallenge: string;

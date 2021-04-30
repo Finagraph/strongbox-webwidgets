@@ -6,6 +6,7 @@ $controlDisabledBackground: #808080;
 $progressForeground: darken($controlBackground, 8);
 $paragraphText: #656565;
 $errorText: red;
+$colorBorders: #707070;
 
 $bulletBackground: #e5f8f9;
 $emphasisText: #1b1443;
@@ -13,9 +14,6 @@ $emphasisText: #1b1443;
 $modalZIndex: 11;
 
 $disabledButtonOpacity: 0.3;
-
-$colorBorders: #707070;
-
 
 .finagraph-strongbox-borrower-portal {
     all: unset;
@@ -161,6 +159,7 @@ $colorBorders: #707070;
         background: rgba(0, 0, 0, 0.4);
     }
 }
+
 .finagraph-strongbox-accounting-packages {
     display: flex;
     flex-direction: row;

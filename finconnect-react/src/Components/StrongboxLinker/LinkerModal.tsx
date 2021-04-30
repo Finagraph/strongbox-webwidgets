@@ -12,11 +12,11 @@ import {
     FindConnection,
     GetFinancialsConnectionDescriptor,
     StrongboxConnectionDescriptor
-} from '../Strongbox/ConnectStrongbox';
+} from '../../Utils/ConnectStrongbox';
 
 import { ConnectionRequestDescriptor } from '../../Models/Api/strongbox.models';
 
-import { TextContent } from '../TextContent/TextContent';
+import { TextContent } from '../../Text/TextContent';
 
 export enum LinkerModalErrorState {
     FailureFindingExistingConnection = 'FailureFindingExistingConnection',

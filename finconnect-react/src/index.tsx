@@ -44,7 +44,7 @@ import './styles.scss'
 
 import LinkButton from './Components/LinkButton';
 import BorrowerContainer from './Components/BorrowerContainer';
-import { BorrowerState, BorrowerSteps, ControlState } from './Components/BorrowerState';
+import { BorrowerState, BorrowerSteps, ControlState } from './Models/BorrowerState';
 
 import {
     DisconnectConnection,
@@ -54,21 +54,26 @@ import {
     LenderConnectionOptions,
     LoadConnectWindow,
     StrongboxConnectionDescriptor,
-} from './Components/Strongbox/ConnectStrongbox';
+} from './Utils/ConnectStrongbox';
 
 import { BuildThemeStyle, Theme } from './Models/Theme/Theme';
 import { defaultFontStyleMap } from './Models/Theme/ThemeFont';
 import { defaultContainerStyleMap } from './Models/Theme/ThemeContainer';
-import { IDelegatedAccessToken } from './Models/Api/ClientBase';
+import { IDelegatedAccessToken } from '@finagraph/strongbox-nexus-client';
 
-import { AccountingPackageToShow, SupportedAccountingPackages, SupportedAccountingPackagesList } from './Components/ChoosePackage';
+import { AccountingPackageToShow, SupportedAccountingPackages } from './Components/ChoosePackage';
 
 import { WebPortalClient } from './Models/Api/strongbox.client';
 
 import { LinkerModal } from './Components/StrongboxLinker/LinkerModal';
-import { InitializeOrganizationParameters } from './Models/Api/strongbox.models';
+import {
+    FinancialStatementImportOptions,
+    TransactionImportOptions,
+    ReceivablesAndPayablesOptions,
+    InitializeOrganizationParameters
+} from './Models/Api/strongbox.models';
 
-import { TextContent, TextLanguages } from './Components/TextContent/TextContent';
+import { TextContent, TextLanguages } from './Text/TextContent';
 
 const strongboxNexusUrlConst = 'https://api.strongbox.link';
 
@@ -76,6 +81,18 @@ export {
     BorrowerSteps,
     AccountingPackageToShow,
     SupportedAccountingPackages,
+};
+
+export type FinancialImportOptions = {
+    mostRecentMonth?: {
+        month: number;
+        year: number;
+    };
+    financialStatementsPeriod?: FinancialStatementImportOptions;
+    transactionsPeriod?: TransactionImportOptions;
+    payablesPeriod?: ReceivablesAndPayablesOptions;
+    receivablesPeriod?: ReceivablesAndPayablesOptions;
+    anonymizeCustomersAndVendors: boolean;
 };
 
 export type SBLinkAccountingPackageChildProps = {
@@ -91,6 +108,7 @@ type SBLinkAccountingPackageProps = {
     className: string;
     disabled?: boolean;
     entityId: string;
+    financialImportOptions?: LenderConnectionOptions;
     language?: string;
     onJobCreated?: (financialRecordId: string) => void;
     onLinkPackageClick: (event: React.MouseEvent) => void;
@@ -181,6 +199,7 @@ const SBLinkAccountingPackage: React.FC<SBLinkAccountingPackageProps> = (props: 
                     }}
                     showConnectionDialog={props.showConnectionDialog}
                     textContent={textContent}
+                    financialImportOptions={props.financialImportOptions}
                 >
                     {stepChildren}
                 </BorrowerContainer>
@@ -199,6 +218,7 @@ export type ISBLinkAccountingPackageProps = {
     children: (props: SBLinkAccountingPackageChildProps) => JSX.Element | undefined;
     className?: string
     disabled?: boolean;
+    financialImportOptions?: FinancialImportOptions;
     language?: string;
     onFailureToSetBusinessName?: (response?: Response) => void;
     onJobCreated?: (financialRecordId: string) => void;
@@ -233,12 +253,22 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
             props.orgId,
             new InitializeOrganizationParameters({ 'displayName': props.orgName })
         )
-        .catch(initException => {
-            console.error(`Exception thrown setting the business name for orgId: ${props.orgId}, orgName: ${props.orgName}`);
-            console.error(initException);
-            props.onFailureToSetBusinessName && props.onFailureToSetBusinessName();
-        });
+            .catch(initException => {
+                console.error(`Exception thrown setting the business name for orgId: ${props.orgId}, orgName: ${props.orgName}`);
+                console.error(initException);
+                props.onFailureToSetBusinessName && props.onFailureToSetBusinessName();
+            });
     }, [props.orgName, props.orgId, props.accessToken]);
+
+    const importOptions = React.useMemo((): LenderConnectionOptions | undefined => {
+        if (!(props.financialImportOptions)) {
+            return undefined;
+        }
+        return {
+            ...props.financialImportOptions,
+            provideUserCopy: false,
+        }
+    }, [props.financialImportOptions])
 
     return (<SBLinkAccountingPackage
         accessToken={props.accessToken}
@@ -248,6 +278,7 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
         className={props.className || ''}
         disabled={props.disabled}
         entityId={props.orgId}
+        financialImportOptions={importOptions}
         language={props.language}
         onJobCreated={props.onJobCreated}
         onLinkPackageClick={(event: React.MouseEvent): void => {

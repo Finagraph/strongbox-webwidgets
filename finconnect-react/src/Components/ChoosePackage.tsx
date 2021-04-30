@@ -1,17 +1,14 @@
 ﻿import * as React from 'react'
 import '../styles.scss'
 
-import {
-    AccountingPackage,
-    AccountingPkgPresentation
-} from '../Models/AccountingPackages';
+import { AccountingPkgPresentation, AccountingPackage } from '../Models/AccountingPackages';
 import { AccountingPackages } from './AccountingPackages';
 
 import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
 import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
-import { generalWindowBackground, paragraphText } from './Colors';
+import { generalWindowBackground, paragraphText } from '../Models/Theme/Colors';
 
-import { TextContent } from './TextContent/TextContent';
+import { TextContent } from '../Text/TextContent';
 
 import IntroBanner from './IntroBanner';
 

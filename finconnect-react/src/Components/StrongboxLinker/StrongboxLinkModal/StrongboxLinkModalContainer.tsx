@@ -4,16 +4,14 @@ import { AccountingPackage } from '../../../Models/AccountingPackages';
 import { IOpenableModal } from '../../../Models/IOpenableModal';
 import { LinkState } from '../../../Models/LinkerSession';
 
+import { StrongboxConnectionDescriptor } from '../../../Utils/ConnectStrongbox';
+
 import StrongboxLinkModal from './StrongboxLinkModal';
 import { Theme } from '../../../Models/Theme/Theme';
-import {
-    IDelegatedAccessToken
-} from '../../../Models/Api/ClientBase';
-
+import { Connection, IDelegatedAccessToken } from '@finagraph/strongbox-nexus-client';
 import { ConnectionRequestDescriptor } from '../../../Models/Api/strongbox.models';
-import { StrongboxConnectionDescriptor } from '../../Strongbox/ConnectStrongbox';
 
-import { TextContent } from '../../TextContent/TextContent';
+import { TextContent } from '../../../Text/TextContent';
 
 export interface IStrongboxLinkModalContainerProps {
     accountingPackage: AccountingPackage;

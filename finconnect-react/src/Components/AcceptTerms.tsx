@@ -3,7 +3,7 @@
 import '../styles.scss'
 
 import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
-import { TextContent } from './TextContent/TextContent';
+import { TextContent } from '../Text/TextContent';
 import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
 import { defaultControlPaletteStyleMap } from '../Models/Theme/ThemePalette';
 

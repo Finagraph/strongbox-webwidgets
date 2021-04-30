@@ -5,32 +5,35 @@ import ChoosePackage, { AccountingPackageToShow } from './ChoosePackage';
 import AcceptTerms from './AcceptTerms';
 import LinkProgress from './LinkProgress';
 import Congratulations from './Congratulations';
-import { BorrowerSteps } from './BorrowerState';
+import { BorrowerSteps } from '../Models/BorrowerState';
 import { LinkerModal } from './StrongboxLinker/LinkerModal';
 
-import { TextContent } from './TextContent/TextContent';
+import { TextContent } from '../Text/TextContent';
 
 import {
     GetFinancialsConnectionDescriptor,
+    LenderConnectionOptions,
     LoadConnectWindow,
     StartFinancialsImport,
     StrongboxConnectionDescriptor
-} from './Strongbox/ConnectStrongbox';
+} from '../Utils/ConnectStrongbox';
+
+import { ConnectionRequestDescriptor } from '../Models/Api/strongbox.models';
 
 import { Theme } from '../Models/Theme/Theme';
-import {
-    AccountingPackage,
-} from '../Models/AccountingPackages';
+import { AccountingPackage } from '../Models/AccountingPackages';
 
 import {
     IDelegatedAccessToken
 } from '../Models/Api/ClientBase';
+import { Connection } from '@finagraph/strongbox-nexus-client';
 
 export type BorrowerContainerProps = {
     accessToken: IDelegatedAccessToken;
     accountingPackages?: AccountingPackageToShow[];
     children: JSX.Element;
     entityId: string;
+    financialImportOptions?: LenderConnectionOptions;
     linkPctgComplete: number;
     onJobCreated?: (financialRecordId: string) => void;
     onLinkPctgChange: (pctComplete: number) => void;
@@ -94,6 +97,7 @@ const BorrowerContainer: React.FC<BorrowerContainerProps> = (props: BorrowerCont
             existingConnectionId: undefined,
             submissionId: undefined,
             initiator: 'widget',
+            lenderManagedOptions: props.financialImportOptions,
         };
 
         if (!!props.showConnectionDialog) {

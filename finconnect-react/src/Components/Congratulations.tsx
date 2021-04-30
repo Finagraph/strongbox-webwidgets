@@ -7,7 +7,7 @@ import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
 import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
 import { defaultControlPaletteStyleMap } from '../Models/Theme/ThemePalette';
 
-import { TextContent } from './TextContent/TextContent';
+import { TextContent } from '../Text/TextContent';
 
 export type CongratulationsProps = {
     theme?: Theme;

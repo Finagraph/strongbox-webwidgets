@@ -332,6 +332,25 @@ class App extends React.Component {
                     <p style={{ marginTop: '25px', marginLeft: '10px ' }}>Your review will be faster if you link your accounting system directly with our platform.</p>
                 </div>
                 <StrongboxFinConnect
+                    financialImportOptions={{
+                        mostRecentMonth: {
+                            month: 0,
+                            year: 2021,
+                        },
+                        anonymizeCustomersAndVendors: true,
+                        transactionsPeriod: {
+                            reportingPeriod: "FiscalYears",
+                            numberOfPeriods: 2,
+                        },
+                        payablesPeriod: {
+                            reportingPeriod: "FiscalYears",
+                            numberOfPeriods: 2,
+                        },
+                        receivablesPeriod: {
+                            reportingPeriod: "FiscalYears",
+                            numberOfPeriods: 2,
+                        },
+                    }}
                     orgId={orgId}
                     orgName={orgName}
                     partnerName={partnerName}

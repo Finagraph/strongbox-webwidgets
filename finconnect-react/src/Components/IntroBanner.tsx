@@ -3,9 +3,9 @@ import '../styles.scss'
 
 import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
 import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
-import { TextContent } from './TextContent/TextContent';
+import { TextContent } from '../Text/TextContent';
 
-import { generalWindowBackground, paragraphText } from './Colors';
+import { generalWindowBackground, paragraphText } from '../Models/Theme/Colors';
 
 import ContractIcon from '@material-ui/icons/ExpandLessRounded';
 

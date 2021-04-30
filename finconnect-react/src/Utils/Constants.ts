@@ -9,6 +9,11 @@ export const jsonHeaders = {
     'Content-Type': 'application/json',
 };
 
+export const fgConnectName = 'Finagraph Connect';
+export const fgConnectDownloadUrl = 'https://sbxnexusstgncus.blob.core.windows.net/setup/v2/qbd/default/FinagraphConnect.msi';
+
+export const termsOfUseUrl = 'https://www.finagraph.com/strongbox-terms';
+
 export const headerConstants = {
     /**
      * Header key for the user's timezone offset. Corresponds to a value in
@@ -16,8 +21,3 @@ export const headerConstants = {
      */
     timezoneOffsetHeaderKey: 'Timezone-Offset',
 };
-
-export const fgConnectName = 'Finagraph Connect';
-export const fgConnectDownloadUrl = 'https://sbxnexusstgncus.blob.core.windows.net/setup/v2/qbd/default/FinagraphConnect.msi';
-
-export const termsOfUseUrl = 'https://www.finagraph.com/strongbox-terms';

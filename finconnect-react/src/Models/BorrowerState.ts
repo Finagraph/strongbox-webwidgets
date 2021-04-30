@@ -4,10 +4,15 @@
 }
 
 export enum BorrowerSteps {
+    acceptTerms,
     choosePackage,
     configureAccounting,
     progress,
+    qbdProgress,
     congratulations,
+    linkQbdIntro,
+    linkQbdOpenAndGrantAccess,
+    linkQbdShare,
 }
 
 export type BorrowerState = {

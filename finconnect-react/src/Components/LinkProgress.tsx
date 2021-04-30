@@ -5,7 +5,7 @@ import { BuildThemeStyle, Theme } from '../Models/Theme/Theme';
 import ProgressBar from './Progress/ProgressBar';
 import ProgressStep from './ProgressStep/ProgressStep';
 
-import { TextContent } from './TextContent/TextContent';
+import { TextContent } from '../Text/TextContent';
 
 export type LinkProgressProps = {
     theme?: Theme;

@@ -3,11 +3,9 @@ import './StrongboxLinkModal.scss';
 import * as React from 'react';
 
 import { AccountingPackage } from '../../../Models/AccountingPackages';
-import {
-    IDelegatedAccessToken
-} from '../../../Models/Api/ClientBase';
+import { IDelegatedAccessToken } from '@finagraph/strongbox-nexus-client';
 
-import { StrongboxConnectionDescriptor } from '../../Strongbox/ConnectStrongbox';
+import { StrongboxConnectionDescriptor } from '../../../Utils/ConnectStrongbox';
 import { SimpleModal } from '../../StrongboxModal';
 import StrongboxLinker, { StrongboxLinkerChildProps } from '../../StrongboxLinker/StrongboxLinker';
 
@@ -21,8 +19,8 @@ import { defaultControlPaletteStyleMap } from '../../../Models/Theme/ThemePalett
 import { defaultControlStyleMap } from '../../../Models/Theme/ThemeControls';
 import { ConnectionRequestDescriptor } from '../../../Models/Api/strongbox.models';
 
-import { TextContent } from '../../TextContent/TextContent';
-import { translations } from '../../TextContent/en/en';
+import { TextContent } from '../../../Text/TextContent';
+import { translations } from '../../../Text/en/en';
 
 type Props = {
     accountingPackage: AccountingPackage;

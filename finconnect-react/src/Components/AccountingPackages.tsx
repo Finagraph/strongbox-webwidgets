@@ -34,12 +34,12 @@
 
 import * as React from 'react'
 
-import qbImg from  '../Images/QuickBooks.png';
-import xeroImg from '../Images/xero.png'
+import qbImg from '../Images/QuickBooks.png';
+import xeroImg from '../Images/xero.png';
 
 import '../styles.scss'
 
-import { AccountingPackage, AccountingPkgPresentation } from '../Models/AccountingPackages';
+import { AccountingPkgPresentation, AccountingPackage } from '../Models/AccountingPackages';
 
 export type IAccountingPackageProps = {
     buttonsDisabled: boolean;

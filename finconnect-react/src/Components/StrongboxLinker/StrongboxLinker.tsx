@@ -3,7 +3,7 @@ import * as React from 'react';
 import { AccountingPackage } from '../../Models/AccountingPackages';
 import { ConnectButton } from '../ConnectButton';
 
-import { LoadConnectWindow, StrongboxConnectionDescriptor } from '../Strongbox/ConnectStrongbox';
+import { LoadConnectWindow, StrongboxConnectionDescriptor } from '../../Utils/ConnectStrongbox';
 
 import { Theme } from '../../Models/Theme/Theme';
 

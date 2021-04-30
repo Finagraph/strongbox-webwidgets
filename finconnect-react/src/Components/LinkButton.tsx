@@ -6,7 +6,7 @@ import { defaultControlFontStyleMap } from '../Models/Theme/ThemeFont';
 import { defaultControlStyleMap } from '../Models/Theme/ThemeControls';
 import { defaultControlPaletteStyleMap } from '../Models/Theme/ThemePalette';
 
-import { TextContent } from './TextContent/TextContent';
+import { TextContent } from '../Text/TextContent';
 
 export type LinkButtonProps = {
     disabled?: boolean;
