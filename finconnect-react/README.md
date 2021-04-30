@@ -47,7 +47,7 @@ Finally add it to your application's render function:
         accessToken={<access token>}
         disabled={<boolean>}
         language={'<language code'>}
-        orgId={'<Provide an ID that uniquely identifies the end user to you>'}
+        orgId={'<Provide an ID that uniquely identifies the customer/business to you>'}
         orgName={'<Provide a name that you will recognize>'}
         onJobCreated={<function that receives a financialRecordId that identifies the job for importing financials and generating a spreadsheet>}
         partnerName={<Consumer's (i.e. your) organization name.) For example, 'XYZ Bank'>}
@@ -61,7 +61,7 @@ Finally add it to your application's render function:
 ```
 | Property | Required | Description |
 |--|--|--|
-| accessToken | true | As mentioned earlier, details of obtaining the `accessToken` property are beyond the scope of this document and better understood by using the Strongbox Sample Application.
+| accessToken | true | As mentioned earlier, details of obtaining the `accessToken` property are beyond the scope of this document and better understood by using the Strongbox Sample Application or reading the [Authorization](https://developer.strongbox.link/guides.html#authorization) section in the Strongbox Developer's guide.
 | disabled | false | Disable the Widget when it is in button mode, i.e. prior to the user clicking "Link With My AccountingPackage" to open the controls that allow them to load their financial data.
 | language | false |an ISO 639-1 language code. Any value is accepted, however, the only supported languages at present are Spanish and English. Each language has only one variant supported so 'es-ar' and 'es-bo' for instance, result in the same content being shown. <br/> Values recognized: <ul><li> Spanish: 'es'</li><li>English: 'en'</li></ul><br/>If the language code is not supported or not provided, English is used.
 | orgId | true | This should be an ID that has meaning to your system.  If you wish to use Strongbox API's that allow you to, for example, access the Excel spreadsheet produced for a customer, you would identify the customer by this ID.  It is the key for your customer.
@@ -69,7 +69,7 @@ Finally add it to your application's render function:
 | onJobCreated | false | A function with the following signature: <br/><br/>```onJobCreated(financialRecordId: string): void;```<br/><br/>The Widget does not actually wait for a job to complete.  It can take a very long time and there is generally no reason for the user to wait for it to complete.  If you as the consumer of this functionality want to poll the status of the job to understand when it completes, you can use this id to do that.  For example, perhaps you want to copy the generated Excel spreadsheet out of Strongbox storage and place it into your own storage when the job is completed.  You can use this id to call an SDK API that will let you know if the spreadsheet is ready.
 | partnerName | true | This is different than orgName, this is the name of your organization and will show up in the terms of use.   So for example, if you are writing an app for 'XYZ Bank' and consuming this Widget you would pass in 'XYZ Bank' for this property.
 | showConnectionDialog | false | Controls the first thing that happens when the user presses a button to connect to an accounting package.  By default, after pressing the button the user will be taken to a browser popup that allows them to enter their credentials for the accounting package.  If this value is true, the user will first be taken to a 'feel good' dialog that describes what's going on and gives them an accounting package specific button to launch into the browser popup.
-| financialImportOptions | false | Controls certain parameters related to the importing of financial data.  If this value is not provided, default values are used.  Specifically, financial data imported will be for 2 fiscal years ending at the most recent full month and if a financial workbook is generated, customers and vendors will be anonymized.<br/><br/>It is defined [here](#financialimportoptions) and exported as type `FinancialImportOptions` for typescript users.
+| financialImportOptions | false | Controls certain parameters related to the importing of financial data.  If this value is not provided, default values are used.  Specifically, financial data imported will included for the current fiscal year-to-date plus an additional 2 full fiscal years. If a financial workbook is generated, customers and vendors will NOT be anonymized.<br/><br/>It is defined [here](#financialimportoptions) and exported as type `FinancialImportOptions` for typescript users.
 
 ###  FinancialImportOptions
 
@@ -105,7 +105,7 @@ type FinancialImportOptions = {
 
 # Customizing available accounting packages
 
-By default, the `Strongbox` Widget will show all the accounting packages it is capable of showing when the user chooses to connect with their accounting system. Further, for some packages that have multiple 'types' a small descriptor is shown under the package icon that describes specifically which package it applies to.  An example would be QuickBooks where the user may have either QuickBooks Online or QuickBooks Desktop.
+By default, the `Strongbox` Widget will show all the accounting packages it is capable of showing when the user chooses to connect with their accounting system. Further, for some packages that have multiple 'types' a small descriptor is shown under the package icon that describes more specifically which package it applies to.  An example would be QuickBooks where the user may have either QuickBooks Online or QuickBooks Desktop.
 
 The packages displayed and the descriptor that shows under the icons are configured through the `accountingPackages` property.
 
@@ -166,7 +166,7 @@ Controls what colors are used for various aspects of the Widget.
 
 ## ThemeFont
 
-defines the appearance of fonts in the Widget.
+Defines the appearance of fonts in the Widget.
 
     type ThemeFont = {
         family?: string;
@@ -254,11 +254,7 @@ The result would be that you would see "I like pie" on every step. It isn't like
         choosePackage,
         configureAccounting,
         progress,
-        qbdProgress,
         congratulations,
-        linkQbdIntro,
-        linkQbdOpenAndGrantAccess,
-        linkQbdShare,
     }
 
     type SBLinkAccountingPackageChildProps = {
@@ -267,7 +263,7 @@ The result would be that you would see "I like pie" on every step. It isn't like
     };
 
 
-As you might expect step is the current step the user is on.   pctComplete is valid when step is equal to 'progress' or 'qbdProgress'.  This helps you customize the content shown while the progress bar is moving.  A more realistic example for replacing this content would be:
+As you might expect `step` is the current step the user is on.   `pctComplete` is valid when step is equal to `progress`.  This helps you customize the content shown while the progress bar is moving.  A more realistic example for replacing this content would be:
 
     {(props) => {
         if (props.step === BorrowerSteps.choosePackage) {
