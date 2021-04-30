@@ -37,6 +37,7 @@ Then execute the following:
 We are in the process of moving the Strongbox Widget to the public NPM registry. That will be completed shortly at which time it will no longer be necessary to modify .npmrc or prefix the package name with '@finagraph/'
 </aside>
 <br/>
+<br/>
 Import it into your application:
 
 `import Strongbox from '@finagraph/strongbox-react';`
