@@ -36,6 +36,7 @@ import * as React from 'react'
 
 import qbImg from '../Images/QuickBooks.png';
 import xeroImg from '../Images/xero.png';
+import sageIntacctImg from '../Images/sageIntacct.png';
 
 import '../styles.scss'
 
@@ -56,6 +57,8 @@ const GetButtonImage = (packageName: AccountingPackage): any => {
         result = qbImg;
     } else if (packageName === AccountingPackage.Xero) {
         result = xeroImg;
+    } else if (packageName === AccountingPackage.SageIntacct) {
+        result = sageIntacctImg;
     }
 
     return result;

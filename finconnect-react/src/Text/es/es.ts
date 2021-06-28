@@ -6,6 +6,7 @@ export const translations: BaseTextContent = {
     QBDesktop: 'Escritorio',
     QBOnline: 'En linea',
     Xero: 'Xero',
+    SageIntacct: 'Sage Intacct',
     ClickYourAccountingPackage: 'Haz clic en tu paquete contable(Accounting Package) de arriba para autorizar una conexión segura de los datos financieros para completar su aplicación',
     PNLStatements: 'Declaraciones de pérdida y ganancias',
     BalanceSheets: 'Balances',
@@ -30,8 +31,10 @@ export const translations: BaseTextContent = {
     LinkModalDescriptionQBD: 'Después de hacer clic en \'Conectar a QuickBooks\', se le mostrarán instrucciones ' +
         'para instalar \'Strongbox Connect\' y compartir su información.Una vez que haya seguido estas instrucciones, ¡estará en camino!',
     LinkModalDescriptionXero: 'Después de hacer clic en \'Connect to Xero\', Xero le pedirá que autorice una conexión a Xero.',
+    LinkModalDescriptionSageIntacct: 'Después de hacer clic en \'Connect to Sage Intacct\', Sage le pedirá que autorice una conexión a Sage Intacct.',
     LinkModalQBOneWay: 'La información en QuickBooks nunca se alterará de ninguna manera. Este es un flujo de datos unidireccional totalmente seguro.',
     LinkModalXeroOneWay: 'La información de Xero nunca se modificará de ninguna manera. Este es un flujo de datos unidireccional totalmente seguro.',
+    LinkModalSageIntacctOneWay: 'La información de Sage Intacct nunca se modificará de ninguna manera. Este es un flujo de datos unidireccional totalmente seguro.',
     LinkModalWorking: 'Trabajando...',
     LinkModalUpdateFinancialsNow: 'Actualice las finanzas ahora',
     TermsDescriptionParagraph1PreSBX: '${partnerName} usos',

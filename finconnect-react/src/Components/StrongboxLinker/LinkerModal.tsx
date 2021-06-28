@@ -269,7 +269,8 @@ export class LinkerModal extends React.PureComponent<ISBLinkerModalProps, State>
         let content: JSX.Element | false = false;
         if (
             (accountingPackage === AccountingPackage.QuickBooksOnline) ||
-            (accountingPackage === AccountingPackage.QuickBooksDesktop) || 
+            (accountingPackage === AccountingPackage.QuickBooksDesktop) ||
+            (accountingPackage === AccountingPackage.SageIntacct) || 
             (accountingPackage === AccountingPackage.Xero)
         ) {
             content = (

@@ -1,6 +1,7 @@
 ﻿export enum AccountingPackage {
     QuickBooksOnline = "QuickBooksOnline",
     SageOne = "SageOne",
+    SageIntacct = "SageIntacct",
     QuickBooksDesktop = "QuickBooksDesktop",
     AccountRightLive = "AccountRightLive",
     FreshBooks = "FreshBooks",
@@ -11,6 +12,7 @@
 export type AccountingPkgPresentation = {
     featureName: AccountingPackage;
     descriptor: string | undefined;
+    isPublic: boolean;
     linkFunc?: () => void;
 };
 

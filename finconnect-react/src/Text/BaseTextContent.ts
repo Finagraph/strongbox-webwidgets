@@ -4,6 +4,7 @@
     QBDesktop: string,
     QBOnline: string,
     Xero: string,
+    SageIntacct: string,
     ClickYourAccountingPackage: string,
     PNLStatements: string,
     BalanceSheets: string,
@@ -27,8 +28,10 @@
     LinkModalDescriptionQBO: string,
     LinkModalDescriptionQBD: string,
     LinkModalDescriptionXero: string,
+    LinkModalDescriptionSageIntacct: string,
     LinkModalQBOneWay: string;
     LinkModalXeroOneWay: string;
+    LinkModalSageIntacctOneWay: string;
     LinkModalWorking: string;
     LinkModalUpdateFinancialsNow: string;
     TermsDescriptionParagraph1PreSBX: string,

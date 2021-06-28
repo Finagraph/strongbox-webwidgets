@@ -6,6 +6,7 @@ export const translations: BaseTextContent = {
     QBDesktop: 'Desktop',
     QBOnline: 'Online',
     Xero: 'Xero',
+    SageIntacct: 'Sage Intacct',
     ClickYourAccountingPackage: 'Click on your accounting package above to authorize a secure connection to the financial data needed to fulfill your application',
     PNLStatements: 'Profit & Loss Statements',
     BalanceSheets: 'Balance Sheets',
@@ -33,8 +34,11 @@ export const translations: BaseTextContent = {
         'instructions you\'ll be on your way!',
     LinkModalDescriptionXero: 'After clicking \'Connect to Xero\', Xero will prompt you to ' +
         'authorize a connection to Xero.',
+    LinkModalDescriptionSageIntacct: 'After clicking \'Connect to Sage Intacct\', Sage will prompt you to ' +
+        'authorize a connection to Sage Intacct.',
     LinkModalQBOneWay: 'Information in QuickBooks will never be altered in any way. This is a fully secure, one-way data stream.',
     LinkModalXeroOneWay: 'Information in Xero will never be altered in any way. This is a fully secure, one-way data stream.',
+    LinkModalSageIntacctOneWay: 'Information in Sage Intacct will never be altered in any way. This is a fully secure, one-way data stream.',
     LinkModalWorking: 'Working...',
     LinkModalUpdateFinancialsNow: 'Update Financials Now',
     TermsDescriptionParagraph1PreSBX: '${partnerName} uses',

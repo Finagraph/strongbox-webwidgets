@@ -28,6 +28,26 @@ import { TextContent } from '../Text/TextContent';
 // Number of milliseconds before checking to see if window is closed
 const watchAuthWindowTimeout = 500;
 
+/**
+ * ImportDayMonthYear is used to provide the last day of a financial import. The date provided should not be greater 
+ * than the current date. If it is not provided, the current date is used.
+ * 
+ * @member {number } month - is required if mostRecentDate is provided and represents the 0 based month, 
+ * i.e. January = 0 and December = 11.
+ * @member {number} day is required if mostRecentDate is provided.  For convenience, if you simply want to represent 
+ * the end of a month, you can pass 0 for the day. For example, if you want to collect information through the end 
+ * of April 2021, you can pass 3 for the month (months are zero based recall), 0 for the day and 2021 for the year. 
+ * Otherwise, this is the 1 based day of the month representing the last full day of imported information. 
+ * @member {number} year - is required if mostRecentDate is provided and is simply the full year, e.g. 2021.
+ * 
+ * */
+
+export type ImportDayMonthYear = {
+    month: number;
+    day: number;
+    year: number;
+}
+
 /*
  * Options for passing to strongbox import job.
  *
@@ -35,10 +55,7 @@ const watchAuthWindowTimeout = 500;
  */
 
 export type LenderConnectionOptions = {
-    mostRecentMonth?: {
-        month: number;
-        year: number;
-    };
+    mostRecentDate?: ImportDayMonthYear;
     financialStatementsPeriod?: FinancialStatementImportOptions;
     transactionsPeriod?: TransactionImportOptions;
     payablesPeriod?: ReceivablesAndPayablesOptions;
@@ -238,9 +255,12 @@ export const StartFinancialsImport = async (
 
         let reportingDate: string;
 
-        if (connectionInfo.lenderManagedOptions && connectionInfo.lenderManagedOptions.mostRecentMonth) {
-            let month = connectionInfo.lenderManagedOptions.mostRecentMonth.month;
-            let year = connectionInfo.lenderManagedOptions.mostRecentMonth.year;
+        if (connectionInfo.lenderManagedOptions && connectionInfo.lenderManagedOptions.mostRecentDate) {
+            let month = connectionInfo.lenderManagedOptions.mostRecentDate.month;
+            let year = connectionInfo.lenderManagedOptions.mostRecentDate.year;
+            // See the big comment where mostRecentDate is defined about it's actual use.  It is 1 based
+            // but may be 0 to just get the full month passed in month.
+            let day = connectionInfo.lenderManagedOptions.mostRecentDate.day;
 
             // Months are 0 based in javascript and also in the lenderManagedOptions.  
             // When you pass 0 for the day, it will get you the end
@@ -249,7 +269,12 @@ export const StartFinancialsImport = async (
             // to deal with an increase in date, so passing in 12 for the month will get
             // december 31 of the current year, i.e. if our month is 11 (december), passing in
             // 2021, 12, 0 will result in 2021-12-31.   
-            reportingDate = toISOLocalDateString(new Date(year, month + 1, 0));
+
+            if (day <= 0) {
+                reportingDate = toISOLocalDateString(new Date(year, month + 1, 0));
+            } else {
+                reportingDate = toISOLocalDateString(new Date(year, month, day));
+            }
         } else {
             reportingDate = toISOLocalDateString(new Date());
         }
@@ -273,7 +298,7 @@ export const StartFinancialsImport = async (
                 label: 'Initiator',
                 value: connectionInfo.initiator,
             }));
-        }
+        } 
 
         const parameters: FinancialImportParameters = new FinancialImportParameters({
             accountingConnectionId: useConnectionId,
