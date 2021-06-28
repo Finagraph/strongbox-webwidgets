@@ -592,6 +592,7 @@ class App extends React.Component {
                                             <Row>
                                                 <Col xs={12} className={"centered-content-region"}>
                                                     <StrongboxFinConnect
+                                                        className={'finconnect-button'}
                                                         financialImportOptions={{
                                                             mostRecentMonth: {
                                                                 month: 0,
