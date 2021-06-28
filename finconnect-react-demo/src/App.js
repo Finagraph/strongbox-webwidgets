@@ -1,4 +1,4 @@
-﻿/*
+/*
  * IMPORTANT: This sample illustrates making calls to the Strongbox service to 
  * generate secure access tokens.  The following constants are defined below: clientId
  * and clientSecret. You will need to provide the values that have been assigned for your
@@ -398,10 +398,10 @@ class App extends React.Component {
     render() {
         return (
             <>
-            <div className="app-header">
-                <img src={logo} className="app-logo" alt="logo" />
-                <h2>Welcome to the XYZ Bank Borrower Portal</h2>
-            </div>
+                <div className="app-header">
+                    <img src={logo} className="app-logo" alt="logo" />
+                    <h2>Welcome to the XYZ Bank Borrower Portal</h2>
+                </div>
                 <Container className="app">
                     <Form>
                         <Row style={{ marginTop: '15px' }}>
