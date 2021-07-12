@@ -174,26 +174,16 @@ import StrongboxFinConnect from '@finagraph/finconnect-react';
  * something that is obvious but doesn't hurt to mention it!
  * 
  * AGAIN, DO NOT PUT THESE VALUES IN CLIENT-SIDE JAVASCRIPT FOR PRODUCTION USE.
-*/
-// const clientId = "<YOUR CLIENT ID>";
-// const clientSecret = "<YOUR CLIENT SECRET>";
+ */
+const clientId = "<YOUR CLIENT ID>";
+const clientSecret = "<YOUR CLIENT SECRET>";
 
+
+/**
+ * TODO Specify a 'partnerName' that identifies your organization to the user of the widget.
+ * For example, the 'partnerName' appears in the sentence "{partnerName} uses Strongbox to link your accounting system"
+ */
 const partnerName = "Test Partner";
-
-/*
-Development
-
-ClientId = 4148dd79-0165-4e7e-a68c-813b664c0108
-ClientSecret = sTjdFrcELAIptETETdMfY+so2KwaOlCr3b7pVVHVVQg=
-
-Production
-
-ClientId = 5dcaa0f6-6074-47e4-ab07-6f73337d6a7f
-ClientSecret = oBnJ69P+ly6W93IpHfd9hYsncykcce5uwPlROnM6mCs=
-*/
-
-const clientId = "4148dd79-0165-4e7e-a68c-813b664c0108";
-const clientSecret = "sTjdFrcELAIptETETdMfY+so2KwaOlCr3b7pVVHVVQg=";
 
 /*
  * TODO - Specify an orgId and orgName
@@ -202,10 +192,8 @@ const clientSecret = "sTjdFrcELAIptETETdMfY+so2KwaOlCr3b7pVVHVVQg=";
  * Typically, you would want to use an identifier for the Organization as stored in your own system. The maximum allowed length for the id is 128 characters, and it may only contain the following characters: 'a-z', 'A-Z', '0-9', '-', '_', '|'.
  * The name for the Organization that is provided to the Widget is the name that will appear in the Strongbox Financial Portal business list.
  */
-// const orgId = "<AN ID FOR THE ORGANIZATION CONNECTING AN ACCOUNTING SYSTEM>";
-// const orgName = "<A NAME FOR THE ORGANIZATION>";
-const orgId = "AC5D17CC-33AA-488E-8370-E9EDAC12DBDD";
-const orgName = "Pizza Ecstasy";
+const orgId = "<AN ID FOR THE ORGANIZATION CONNECTING AN ACCOUNTING SYSTEM>";
+const orgName = "<A NAME FOR THE ORGANIZATION>";
 
 const loanReasonHiring = 1;
 const loanReasonEquipment = 2;
@@ -213,8 +201,7 @@ const loanReasonFacilities = 3;
 const loanReasonOther = 4;
 
 class App extends React.Component {
-    strongboxAuthUrl = "https://finagraphstrongbox.azurefd.net";
-    // strongboxAuthUrl = "https://auth.strongbox.link";
+    strongboxAuthUrl = "https://auth.strongbox.link";
 
     constructor(props) {
         super(props);
@@ -629,8 +616,6 @@ class App extends React.Component {
                                                                 importExpanded: expanded,
                                                             });
                                                         }}
-                                                        // strongboxUrlOverride={'https://strongboxfinancialdataportalapiwebapptestncus.azurewebsites.net'}
-                                                        strongboxUrlOverride={'https://finagraphstrongbox.azurefd.net'}
                                                     >
                                                         {(props) => {
                                                             return undefined;
