@@ -37,7 +37,6 @@ Then execute the following:
 We are in the process of moving the Strongbox Widget to the public NPM registry. That will be completed shortly at which time it will no longer be necessary to modify .npmrc or prefix the package name with '@finagraph/'
 </aside>
 <br/>
-<br/>
 Import it into your application:
 
 `import Strongbox from '@finagraph/strongbox-react';`
@@ -76,8 +75,9 @@ Finally add it to your application's render function:
 
 ```
 type FinancialImportOptions = {       
-	mostRecentMonth?: {
+	mostRecentDate?: {
 		month: number;
+		day: number;
 		year: number;
 	};
 	anonymizeCustomersAndVendors: boolean;
@@ -100,7 +100,7 @@ type FinancialImportOptions = {
 ```
 | Property | Required  | Description |
 |--|--|--|
-| mostRecentMonth | false  | Controls the last full month for which accounting data will be gathered. The date it represents should be no greater than the most recent full month, e.g. if it's April 17 2021, this date should be no greater than March 2021. If it is not provided, the latest full month is used, March in the preceding example.<br/><ul><li>month is required if mostRecentMonth is provided and represents the 0 based month, i.e. January = 0 and December = 11.</li><li>year is required if mostRecentMonth is provided and is simply the full year, e.g. 2021.</li></ul>
+| mostRecentDate | false  | Controls the last day for which accounting data will be gathered. The date provided should not be greater than the current date. If it is not provided, the current date is used.<br/><ul><li>month is required if mostRecentDate is provided and represents the 0 based month, i.e. January = 0 and December = 11.</li><li>day is required if mostRecentDate is provided.  For convenience, if you simply want to represent the end of a month, you can pass 0 for the day.  For example, if you want to collect information through the end of April 2021, you can pass 3 for the month (months are zero based recall), 0 for the day and 2021 for the year. Otherwise, this is the 1 based day of the month representing the last full day of imported information.</li><li>year is required if mostRecentDate is provided and is simply the full year, e.g. 2021.</li></ul>
 | anonymizeCustomersAndVendors| false | If a financial workbook is generated as a result of this import, should the customer and vendor names contained in the workbook be anonymized.
 | financialStatementsPeriod<br/>transactionsPeriod<br/>payablesPeriod<br>receivablesPeriod | false | These values control how much data to import for their respective types (financial statements, transactions, payables and receivables.)  These values are reasonably self-explanatory but are more fully discussed in the [SDK documentation](https://developer.strongbox.link/guides.html#tocs_accountingimportoptions).<br/><br/>If any of these values are not provided, the corresponding financial data type will *NOT* be imported.
 

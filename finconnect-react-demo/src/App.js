@@ -142,10 +142,28 @@
                     }}
  */
 
-import logo from './logo.svg';
+import logo from './Images/Banner.svg';
+
+import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 
 import React from 'react';
+import {
+    Button,
+    Col,
+    Container,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    Form,
+    FormGroup,
+    Input,
+    Label,
+    Row,
+} from 'reactstrap';
+
+import { FadeLoader } from 'react-spinners';
 
 import StrongboxFinConnect from '@finagraph/finconnect-react';
 
@@ -156,15 +174,16 @@ import StrongboxFinConnect from '@finagraph/finconnect-react';
  * something that is obvious but doesn't hurt to mention it!
  * 
  * AGAIN, DO NOT PUT THESE VALUES IN CLIENT-SIDE JAVASCRIPT FOR PRODUCTION USE.
-*/
+ */
 const clientId = "<YOUR CLIENT ID>";
 const clientSecret = "<YOUR CLIENT SECRET>";
+
 
 /**
  * TODO Specify a 'partnerName' that identifies your organization to the user of the widget.
  * For example, the 'partnerName' appears in the sentence "{partnerName} uses Strongbox to link your accounting system"
-*/
-const partnerName = "{YOUR NAME}";
+ */
+const partnerName = "Test Partner";
 
 /*
  * TODO - Specify an orgId and orgName
@@ -176,6 +195,11 @@ const partnerName = "{YOUR NAME}";
 const orgId = "<AN ID FOR THE ORGANIZATION CONNECTING AN ACCOUNTING SYSTEM>";
 const orgName = "<A NAME FOR THE ORGANIZATION>";
 
+const loanReasonHiring = 1;
+const loanReasonEquipment = 2;
+const loanReasonFacilities = 3;
+const loanReasonOther = 4;
+
 class App extends React.Component {
     strongboxAuthUrl = "https://auth.strongbox.link";
 
@@ -184,7 +208,17 @@ class App extends React.Component {
 
         this.state = {
             authorizationObject: undefined,
+            generalAccessToken: "",
+            fundUseShowing: false,
+            loanReason: 0,
+            reasonText: "Select one",
+            importExpanded: false,
+            financialRecordId: undefined,
+            showSuccessImport: false,
         };
+
+        this.toggleFundUse = this.toggleFundUse.bind(this);
+        this.monitorStatus = this.monitorStatus.bind(this);
     }
 
     componentDidMount() {
@@ -231,6 +265,10 @@ class App extends React.Component {
                     console.log("Response received for requesting a Strongbox access token");
                     console.log(authResponse); // please do NOT log your access tokens. this is just example code. thanks!
 
+                    this.setState({
+                        generalAccessToken: authResponse.access_token
+                    });
+
                     /*
                      * At this point authResponse has an access token that can be used to 
                      * retrieve the delegated access token, which is suitable for use within the Strongbox React
@@ -275,7 +313,7 @@ class App extends React.Component {
                                  */
 
                                 this.setState({
-                                    authorizationObject: delegatedTokenResponse
+                                    authorizationObject: delegatedTokenResponse,
                                 });
                             });
                     } catch (delegatedAccessException) {
@@ -287,6 +325,51 @@ class App extends React.Component {
             console.log("Exception requesting an access token from Strongbox");
             console.log(authException);
         }
+    }
+
+    toggleFundUse() {
+        this.setState({
+            fundUseShowing: !this.state.fundUseShowing,
+        });
+    }
+
+    monitorStatus(financialRecordId) {
+        console.log('checking status');
+
+        const tempHeaders = new Headers();
+
+        tempHeaders.append("Authorization", "Bearer " + this.state.generalAccessToken);
+        tempHeaders.append("Content-Type", "application/json");
+        tempHeaders.append("Cache-Control", "no-cache");
+        tempHeaders.append("accept", "application/json");
+
+        const listRequest = {
+            method: "GET",
+            headers: tempHeaders
+        }
+
+        const statusUrl = `${this.strongboxAuthUrl}/Organizations/${orgId}/FinancialRecords/${financialRecordId}/ImportStatus`;
+
+        fetch(statusUrl, listRequest)
+            .then(response => {
+                return response.json();
+            })
+            .then(resultStatus => {
+                console.log(`retrieved financial record status ${resultStatus.outcome}`);
+                if (resultStatus.outcome === "Success") {
+                    this.setState({
+                        importExpanded: false,
+                        financialRecordId: undefined,
+                        showSuccessImport: true,
+                    });
+                } else {
+                    setTimeout(this.monitorStatus, 5000, financialRecordId);
+                }
+            })
+            .catch(() => {
+                console.log(`error retrieving status. Retrying in 5 seconds`);
+                setTimeout(this.monitorStatus, 5000, financialRecordId);
+            })
     }
 
     /*
@@ -301,67 +384,267 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="App">
-                <div className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h2>Welcome to the Strongbox Financial Portal</h2>
+            <>
+                <div className="app-header">
+                    <img src={logo} className="app-logo" alt="logo" />
+                    <h2>Welcome to the XYZ Bank Borrower Portal</h2>
                 </div>
-                <div className="App-body">
-                    <label className="Std-label" for="fname">First name:</label>
-                    <input className="Std-input" type="text" id="fname" name="fname" /><br />
-                    <label className="Std-label" for="lname">Last name:</label>
-                    <input className="Std-input" type="text" id="lname" name="lname" /><br />
-                    <label className="Std-label" for="businessName">Business name:</label>
-                    <input className="Std-input" type="text" id="businessName" name="businessName" /><br />
-                    <label className="Std-label" for="businessEmail">Business email:</label>
-                    <input className="Std-input" type="text" id="businessEmail" name="businessEmail" /><br />
-                    <label className="Std-label" for="requestedAmt">Loan amount requested:</label>
-                    <input className="Std-input" type="text" id="requestedAmt" name="requestedAmt" /><br /><br />
-                    <label className="Std-label" for="whatFor">What will you be using these funds for:</label><br />
-                    <input className="Std-input" type="text" id="WhatFor" name="WhatFor" /><br />
-                    <p style={{ marginLeft: '10px', marginTop: '20px' }}>Required Documents:</p><br />
-                    <div style={{ marginLeft: '25px ' }}>
-                        <span>To review your loan application, we require the following:</span><br />
-                        <ul>
-                            <li>Last year's balance sheet and profit & loss statement</li>
-                            <li>Last month's balance sheet</li>
-                            <li>This year's (YTD) profit & loss statement</li>
-                            <li>Last 3 months bank statements</li>
-                        </ul>
-                    </div>
-                    <p style={{ marginTop: '25px', marginLeft: '10px ' }}>Your review will be faster if you link your accounting system directly with our platform.</p>
-                </div>
-                <StrongboxFinConnect
-                    financialImportOptions={{
-                        mostRecentMonth: {
-                            month: 0,
-                            year: 2021,
-                        },
-                        anonymizeCustomersAndVendors: true,
-                        transactionsPeriod: {
-                            reportingPeriod: "FiscalYears",
-                            numberOfPeriods: 2,
-                        },
-                        payablesPeriod: {
-                            reportingPeriod: "FiscalYears",
-                            numberOfPeriods: 2,
-                        },
-                        receivablesPeriod: {
-                            reportingPeriod: "FiscalYears",
-                            numberOfPeriods: 2,
-                        },
-                    }}
-                    orgId={orgId}
-                    orgName={orgName}
-                    partnerName={partnerName}
-                    accessToken={this.state.authorizationObject}
-                    onJobCreated={(financialRecordId) => { console.log(`An import job has been created, id = ${financialRecordId}`); }}
-                >
-                    {(props) => {
-                        return undefined;
-                    }}
-                </StrongboxFinConnect>
-            </div>
+                <Container className="app">
+                    <Form>
+                        <Row style={{ marginTop: '15px' }}>
+                            <Col className="content-region">
+                                <Row className="input-section-title">
+                                    <Col>
+                                        <h1>Tell us a little about your business</h1>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col className={"mt-2"} sm={12} md={6}>
+                                        <FormGroup row>
+                                            <Label for="fname" xs="12">First name:</Label>
+                                            <Col>
+                                                <Input type="text" id="fname" name="fname" />
+                                            </Col>
+                                        </FormGroup>
+                                    </Col>
+                                    <Col className={"mt-2"} sm={12} md={6}>
+                                        <FormGroup row>
+                                            <Label for="lname" xs="12">Last name:</Label>
+                                            <Col>
+                                                <Input type="text" id="lname" name="lname" />
+                                            </Col>
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col className={"mt-2"} sm={12} md={6}>
+                                        <FormGroup row>
+                                            <Label for="businessName" xs="12">Business name:</Label>
+                                            <Col>
+                                                <Input type="text" id="businessName" name="businessName" />
+                                            </Col>
+                                        </FormGroup>
+                                    </Col>
+                                    <Col className={"mt-2"} sm={12} md={6}>
+                                        <FormGroup row>
+                                            <Label for="email" xs="12">Email address:</Label>
+                                            <Col>
+                                                <Input type="email" id="email" name="email" />
+                                            </Col>
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                        <Row style={{ marginTop: '15px' }}>
+                            <Col className="content-region">
+                                <Row className="input-section-title">
+                                    <Col>
+                                        <h1>Tell us about your loan request</h1>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col className={"mt-2"} sm={12} md={4}>
+                                        <FormGroup row>
+                                            <Label for="loanamt" xs="12">Loan amount:</Label>
+                                            <Col>
+                                                <Input type="number" id="loanamt" name="loanamt" />
+                                            </Col>
+                                        </FormGroup>
+                                    </Col>
+                                    <Col className={"mt-2"} sm={12} md={8}>
+                                        <FormGroup row>
+                                            <Label sm={12} md={"12"} for="funduse" xs="auto">What is your primary use for these funds:</Label>
+                                            <Col sm={12} md={4} lg={5} xl={7}>
+                                                <Dropdown id="funduse" name="funduse" isOpen={this.state.fundUseShowing} toggle={this.toggleFundUse}>
+                                                    <DropdownToggle caret>
+                                                        {this.state.reasonText}
+                                                    </DropdownToggle>
+                                                    <DropdownMenu>
+                                                        <DropdownItem
+                                                            onClick={() => this.setState({ loanReason: loanReasonHiring, reasonText: "Additional hiring" })}
+                                                        >
+                                                            Additional hiring
+                                                        </DropdownItem>
+                                                        <DropdownItem
+                                                            onClick={() => this.setState({ loanReason: loanReasonEquipment, reasonText: "Equipment" })}
+                                                        >
+                                                            Equipment
+                                                        </DropdownItem>
+                                                        <DropdownItem
+                                                            onClick={() => this.setState({ loanReason: loanReasonFacilities, reasonText: "Facilities" })}
+                                                        >
+                                                            Facilities
+                                                        </DropdownItem>
+                                                        <DropdownItem
+                                                            onClick={() => this.setState({ loanReason: loanReasonOther, reasonText: "Other" })}
+                                                        >
+                                                            Other
+                                                        </DropdownItem>
+                                                    </DropdownMenu>
+                                                </Dropdown>
+                                            </Col>
+                                        </FormGroup>
+                                    </Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                        {this.state.showSuccessImport && (
+                            <Row style={{ marginTop: '15px' }}>
+                                <Col className="content-region">
+                                    <Row className="input-section-title">
+                                        <Col>
+                                            <h1>Financial history</h1>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col>
+                                            <Row>
+                                                <Col>
+                                                    <p>All done!  Your financial information has been submitted successfully.</p>
+                                                </Col>
+                                            </Row>
+                                            <Row style={{ marginTop: '1em' }}>
+                                                <Col>
+                                                    <Button onClick={() => { this.setState({ showSuccessImport: false }) }}>
+                                                        Continue
+                                                    </Button>
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        )}
+                        {!!this.state.financialRecordId && !this.state.showSuccessImport && (
+                            <Row style={{ marginTop: '15px' }}>
+                                <Col className="content-region">
+                                    <Row className="input-section-title">
+                                        <Col>
+                                            <h1>Financial history</h1>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col style={{ height: '25px' }} xs={3} sm={2} md={1}>
+                                            <FadeLoader />
+                                        </Col>
+                                        <Col>
+                                            <Row>
+                                                <Col>
+                                                    <p>Your financial information is being imported. You can wait for the import to complete or continue.</p>
+                                                </Col>
+                                            </Row>
+                                            <Row style={{ marginTop: '1em' }}>
+                                                <Col>
+                                                    <Button onClick={() => { this.setState({ importExpanded: false, financialRecordId: undefined }) }}>
+                                                        I'm all done, continue
+                                                    </Button>
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                </Col>
+                            </Row>
+                        )}
+                        {!this.state.financialRecordId && !this.state.showSuccessImport && (
+                            <Row style={{ marginTop: '15px' }}>
+                                <Col className="content-region">
+                                    <Row className="input-section-title">
+                                        <Col>
+                                            <h1>Financial history</h1>
+                                        </Col>
+                                    </Row>
+                                    {!this.state.importExpanded && (
+                                        <Row>
+                                            <Col xs={12}>
+                                                <span>To review your loan application, we require the following:</span>
+                                                <ul style={{ marginTop: '1em' }}>
+                                                    <li>Last year's balance sheet and profit & loss statement</li>
+                                                    <li>Last month's balance sheet</li>
+                                                    <li>This year's (YTD) profit & loss statement</li>
+                                                    <li>Last 3 months bank statements</li>
+                                                </ul>
+                                            </Col>
+                                        </Row>
+                                    )}
+                                    <Row className={"bottom-grid-region top-grid-region"}>
+                                        <Col sm={12} md={this.state.importExpanded ? 12 : 6}>
+                                            {!this.state.importExpanded && (
+                                                <Row style={{ marginTop: "1em" }} className={"centered-content-region"}>
+                                                    <Col>
+                                                        <h2>Automatically import your financial history with a click!</h2>
+                                                    </Col>
+                                                </Row>
+                                            )}
+                                            <Row>
+                                                <Col xs={12} className={"centered-content-region"}>
+                                                    <StrongboxFinConnect
+                                                        className={'finconnect-button'}
+                                                        financialImportOptions={{
+                                                            mostRecentMonth: {
+                                                                month: 0,
+                                                                year: 2021,
+                                                            },
+                                                            anonymizeCustomersAndVendors: true,
+                                                            transactionsPeriod: {
+                                                                reportingPeriod: "FiscalYears",
+                                                                numberOfPeriods: 2,
+                                                            },
+                                                            payablesPeriod: {
+                                                                reportingPeriod: "FiscalYears",
+                                                                numberOfPeriods: 2,
+                                                            },
+                                                            receivablesPeriod: {
+                                                                reportingPeriod: "FiscalYears",
+                                                                numberOfPeriods: 2,
+                                                            },
+                                                        }}
+                                                        orgId={orgId}
+                                                        orgName={orgName}
+                                                        partnerName={partnerName}
+                                                        accessToken={this.state.authorizationObject}
+                                                        onJobCreated={(financialRecordId) => {
+                                                            console.log(`An import job has been created, id = ${financialRecordId}`);
+                                                            this.setState({
+                                                                financialRecordId,
+                                                            });
+
+                                                            this.monitorStatus(financialRecordId);
+                                                        }}
+                                                        onButtonExpanded={(expanded) => {
+                                                            this.setState({
+                                                                importExpanded: expanded,
+                                                            });
+                                                        }}
+                                                    >
+                                                        {(props) => {
+                                                            return undefined;
+                                                        }}
+                                                    </StrongboxFinConnect>
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                        {!this.state.importExpanded && (
+                                            <Col className={"left-grid-region drop-zone centered-content-region"} xs={6}>
+                                                <Row>
+                                                    <Col xs={12}>
+                                                        <h2 style={{ marginTop: "1em" }} >Manually collect the documentation listed above and drop it here</h2>
+                                                    </Col>
+                                                    <Col xs={12} className={"centered-content-region"}>
+                                                        <Button>
+                                                            Browse local computer
+                                                </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Col>
+                                        )}
+                                    </Row>
+                                </Col>
+                            </Row>
+                        )}
+                    </Form>
+                </Container>
+            </>
         );
     }
 }

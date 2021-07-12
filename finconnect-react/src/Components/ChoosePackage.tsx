@@ -15,11 +15,13 @@ import IntroBanner from './IntroBanner';
 export type SupportedAccountingPackages =
     AccountingPackage.QuickBooksDesktop |
     AccountingPackage.QuickBooksOnline |
+    AccountingPackage.SageIntacct |
     AccountingPackage.Xero;
 
 export const SupportedAccountingPackagesList: AccountingPackage[] = [
     AccountingPackage.QuickBooksDesktop,
     AccountingPackage.QuickBooksOnline,
+    AccountingPackage.SageIntacct,
     AccountingPackage.Xero,
 ];
 
@@ -59,14 +61,22 @@ const ChoosePackage: React.FC<ChoosePackageProps> = (props: ChoosePackageProps):
         {
             featureName: AccountingPackage.QuickBooksOnline,
             descriptor: props.textContent.TextValue('QBOnline'),
+            isPublic: true,
         },
         {
             featureName: AccountingPackage.QuickBooksDesktop,
             descriptor: props.textContent.TextValue('QBDesktop'),
+            isPublic: true,
         },
         {
             featureName: AccountingPackage.Xero,
             descriptor: undefined,
+            isPublic: true,
+        },
+        {
+            featureName: AccountingPackage.SageIntacct,
+            descriptor: undefined,
+            isPublic: false,
         }
     ]
 
@@ -74,7 +84,7 @@ const ChoosePackage: React.FC<ChoosePackageProps> = (props: ChoosePackageProps):
 
     React.useEffect(() => {
         if (!props.accountingPackages) {
-            const newPackages: AccountingPkgPresentation[] = fullAccountingPackages.slice();
+            const newPackages: AccountingPkgPresentation[] = fullAccountingPackages.filter(pkg => pkg.isPublic);
             setActiveAccountingPackages(newPackages);
         } else {
             const newPackages: AccountingPkgPresentation[] = [];

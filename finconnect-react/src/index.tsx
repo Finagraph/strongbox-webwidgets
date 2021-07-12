@@ -51,6 +51,7 @@ import {
     FinancialsImport,
     FindConnection,
     GetFinancialsConnectionDescriptor,
+    ImportDayMonthYear,
     LenderConnectionOptions,
     LoadConnectWindow,
     StrongboxConnectionDescriptor,
@@ -84,10 +85,7 @@ export {
 };
 
 export type FinancialImportOptions = {
-    mostRecentMonth?: {
-        month: number;
-        year: number;
-    };
+    mostRecentDate?: ImportDayMonthYear;
     financialStatementsPeriod?: FinancialStatementImportOptions;
     transactionsPeriod?: TransactionImportOptions;
     payablesPeriod?: ReceivablesAndPayablesOptions;
@@ -222,6 +220,7 @@ export type ISBLinkAccountingPackageProps = {
     language?: string;
     onFailureToSetBusinessName?: (response?: Response) => void;
     onJobCreated?: (financialRecordId: string) => void;
+    onButtonExpanded?: (expanded: boolean) => void;
     orgId: string;
     orgName?: string;
     partnerName: string;
@@ -242,23 +241,31 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
         return props.strongboxUrlOverride || strongboxNexusUrlConst;
     }
 
-    React.useEffect(() => {
-        if (!(props.orgName && props.accessToken && props.accessToken.accessToken)) {
+    const initOrgName = (): void => {
+        if (!(props.orgId && props.accessToken && props.accessToken.accessToken)) {
             return;
         }
 
+        let orgName = props.orgName;
+
+        if (!orgName) {
+            const dateStr = new Date().toDateString();
+            orgName = `Imported on-${dateStr}`;
+        }
+        
         const webPortal = new WebPortalClient(props.accessToken, strongboxUri());
 
         webPortal.initializeOrganization(
             props.orgId,
-            new InitializeOrganizationParameters({ 'displayName': props.orgName })
+            new InitializeOrganizationParameters({ 'displayName': orgName })
         )
             .catch(initException => {
-                console.error(`Exception thrown setting the business name for orgId: ${props.orgId}, orgName: ${props.orgName}`);
+                console.error(`Exception thrown setting the business name for orgId: ${props.orgId}, orgName: ${orgName}`);
                 console.error(initException);
                 props.onFailureToSetBusinessName && props.onFailureToSetBusinessName();
             });
-    }, [props.orgName, props.orgId, props.accessToken]);
+
+    }
 
     const importOptions = React.useMemo((): LenderConnectionOptions | undefined => {
         if (!(props.financialImportOptions)) {
@@ -286,6 +293,7 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
                 ...borrowerState,
                 state: ControlState.borrower,
             });
+            props.onButtonExpanded && props.onButtonExpanded(true);
         }}
         onNextStep={(step: BorrowerSteps, goToStep?: BorrowerSteps): void => {
             let nextStep: BorrowerSteps;
@@ -300,6 +308,7 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
                         nextStep = BorrowerSteps.choosePackage;
                         break;
                     case BorrowerSteps.choosePackage:
+                        initOrgName();
                         nextStep = BorrowerSteps.progress;
                         break;
                     case BorrowerSteps.progress:
@@ -308,6 +317,7 @@ const App: React.FC<ISBLinkAccountingPackageProps> = (props: ISBLinkAccountingPa
                     case BorrowerSteps.congratulations:
                         nextStep = termsAccepted ? BorrowerSteps.choosePackage : BorrowerSteps.acceptTerms;
                         controlState = ControlState.button;
+                        props.onButtonExpanded && props.onButtonExpanded(false);
                         break;
                     default:
                         return;
