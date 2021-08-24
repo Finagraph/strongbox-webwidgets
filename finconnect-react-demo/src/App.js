@@ -472,6 +472,15 @@ class App extends React.Component {
                     {!(!!this.state.authorizationObject || this.state.retrievingAuthorization) && (
                         <Form name="sbParamsForm" onSubmit={(e) => this.submitSBParameters(e) } >
                             <Row style={{ marginTop: '15px' }}>
+                                <Col className="content-region warning-region">
+                                    <p>None of the information you enter below will be saved. IMPORTANT, make sure that you keep your
+                                        strongbox credentials secret. These provide you with access to the Strongbox APIs and should never
+                                        be visible in client-side code. They should only be used in a server-server context where your keys
+                                        can be kept secret.
+                                    </p>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: '15px' }}>
                                 <Col className="content-region">
                                     <Row className="input-section-title">
                                         <Col>

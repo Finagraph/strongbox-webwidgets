@@ -56,6 +56,13 @@ h2 {
     min-height: 80px;
 }
 
+.warning-region {
+    background-color: lightgoldenrodyellow;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 20px;
+}
+
 .finconnect-button {
     background-color: white !important;
 }
