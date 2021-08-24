@@ -166,7 +166,7 @@ import {
 
 import { FadeLoader } from 'react-spinners';
 
-import StrongboxFinConnect from '@finagraph/finconnect-react';
+import StrongboxFinConnect from '@finagraph/strongbox-react';
 
 /**
  * TODO Specify a 'partnerName' that identifies your organization to the user of the widget.
