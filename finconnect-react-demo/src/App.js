@@ -568,7 +568,7 @@ class App extends React.Component {
                                     <Row>
                                         <Col className={"mt-2"} sm={12} md={6}>
                                             <FormGroup row>
-                                                <Label for="strongboxAuthUrl" xs="12">URL for strongbox API:</Label>
+                                                <Label for="strongboxAuthUrl" xs="12">Strongbox API authorization endpoint:</Label>
                                                 <Col>
                                                     <Input
                                                         onChange={this.handleChange}
