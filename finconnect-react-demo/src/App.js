@@ -282,6 +282,11 @@ class App extends React.Component {
                     }
                     console.log("An error occurred requesting an access token for Strongbox.");
                     console.log(r.statusText);
+
+                    this.setState({
+                        retrievingAuthorization: false,
+                        failedRetrievingAuthorization: true,
+                    });
                 })
                 .then(authResponse => {
                     console.log("Response received for requesting a Strongbox access token");
@@ -326,6 +331,11 @@ class App extends React.Component {
                                     }
                                     console.log("An error occurred generating a delegated access token");
                                     console.log(r.statusText);
+
+                                    this.setState({
+                                        retrievingAuthorization: false,
+                                        failedRetrievingAuthorization: true,
+                                    });
                                 })
                                 .then(delegatedTokenResponse => {
                                     console.log("response for delegated access token request received");
@@ -341,6 +351,15 @@ class App extends React.Component {
                                         authorizationObject: delegatedTokenResponse,
                                         retrievingAuthorization: false,
                                     });
+                                })
+                                .catch(exception => {
+                                    console.log("Network error generating a delegated access token");
+                                    console.log(exception);
+
+                                    this.setState({
+                                        retrievingAuthorization: false,
+                                        failedRetrievingAuthorization: true,
+                                    });
                                 });
                         } catch (delegatedAccessException) {
                             console.log('Exception requesting a delegated access token');
@@ -351,6 +370,14 @@ class App extends React.Component {
                             })
                         }
                     }
+                })
+                .catch(exception => {
+                    console.log("Network error requesting an access token from Strongbox");
+                    console.log(exception);
+                    this.setState({
+                        retrievingAuthorization: false,
+                        failedRetrievingAuthorization: true,
+                    });
                 });
         } catch (authException) {
             console.log("Exception requesting an access token from Strongbox");
