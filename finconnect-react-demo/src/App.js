@@ -180,6 +180,10 @@ const loanReasonFacilities = 3;
 const loanReasonOther = 4;
 
 class App extends React.Component {
+    clientIdInputName = "username";
+    clientSecretInputName = "password";
+    defaultStrongboxAuthUrl = "https://auth.strongbox.link";
+
     constructor(props) {
         super(props);
 
@@ -224,11 +228,12 @@ class App extends React.Component {
             financialRecordId: undefined,
             showSuccessImport: false,
             attemptedSbParameterSubmit: false,
+            showPasswordField: false,
             orgName: '',
             orgId: '',
             clientId: '',
             clientSecret: '',
-            strongboxAuthUrl: "https://auth.strongbox.link",
+            strongboxAuthUrl: this.defaultStrongboxAuthUrl,
         };
 
         this.toggleFundUse = this.toggleFundUse.bind(this);
@@ -275,7 +280,7 @@ class App extends React.Component {
                 retrievingAuthorization: true,
             });
 
-            fetch(`${this.state.strongboxAuthUrl}/v1/token`, tokenFetchRequest)
+            fetch(`${this.state.strongboxAuthUrl.trim()}/v1/token`, tokenFetchRequest)
                 .then(r => {
                     if (r.ok) {
                         return r.json()
@@ -324,7 +329,7 @@ class App extends React.Component {
                         try {
                             console.log("Executing fetch call to generate a delegated access token");
 
-                            fetch(`${this.state.strongboxAuthUrl}/v1/DelegatedAccessTokens`, delegatedAuthFetchRequest)
+                            fetch(`${this.state.strongboxAuthUrl.trim()}/v1/DelegatedAccessTokens`, delegatedAuthFetchRequest)
                                 .then(r => {
                                     if (r.ok) {
                                         return r.json();
@@ -410,7 +415,10 @@ class App extends React.Component {
             headers: tempHeaders
         }
 
-        const statusUrl = `${this.state.strongboxAuthUrl}/Organizations/${this.state.orgId}/FinancialRecords/${financialRecordId}/ImportStatus`;
+        const strongboxApiUrl = this.state.strongboxAuthUrl.trim() === this.defaultStrongboxAuthUrl ?
+            "https://api.strongbox.link" : this.state.strongboxAuthUrl.trim();
+                                          
+        const statusUrl = `${strongboxApiUrl}/Organizations/${this.state.orgId}/FinancialRecords/${financialRecordId}/ImportStatus`;
 
         fetch(statusUrl, listRequest)
             .then(response => {
@@ -436,7 +444,18 @@ class App extends React.Component {
 
     handleChange = (event) => {
         const { target } = event;
-        const { name } = target;
+        let { name } = target;
+
+        // We give the fields common names so password managers can recognize them.  In terms of
+        // our state, however, it's more clear to use names that represent more closely what they
+        // actual are which are a clientId and clientSecret which effectively are username and
+        // password.
+        
+        if (name === this.clientIdInputName) {
+            name = "clientId";
+        } else if (name === this.clientSecretInputName) {
+            name = "clientSecret";
+        }
 
         this.setState({
             [name]: target.value,
@@ -517,13 +536,14 @@ class App extends React.Component {
                                     <Row>
                                         <Col className={"mt-2"} sm={12} md={6}>
                                             <FormGroup row>
-                                                <Label for="clientId" xs="12">Client ID (You received this from the Strongbox Developer Portal):</Label>
+                                                <Label for={this.clientIdInputName} xs="12">Client ID (You received this from the Strongbox Developer Portal):</Label>
                                                 <Col>
                                                     <Input
                                                         onChange={this.handleChange}
                                                         type="text"
-                                                        id="clientId"
-                                                        name="clientId"
+                                                        id={this.clientIdInputName}
+                                                        name={this.clientIdInputName}
+                                                        autoComplete="username"
                                                         invalid={this.state.failedRetrievingAuthorization || (this.state.attemptedSbParameterSubmit && !this.state.clientId)}
                                                         value={this.state.clientId}
                                                     />
@@ -538,16 +558,36 @@ class App extends React.Component {
                                         </Col>
                                         <Col className={"mt-2"} sm={12} md={6}>
                                             <FormGroup row>
-                                                <Label for="clientSecret" xs="12">Client secret:</Label>
+                                                <Label for={this.clientSecretInputName} xs="12">Client secret:</Label>
                                                 <Col>
-                                                    <Input
-                                                        onChange={this.handleChange}
-                                                        type="text"
-                                                        id="clientSecret"
-                                                        name="clientSecret"
-                                                        invalid={this.state.failedRetrievingAuthorization || (this.state.attemptedSbParameterSubmit && !this.state.clientSecret)}
-                                                        value={this.state.clientSecret}
-                                                    />
+                                                    <Row>
+                                                        <Col>
+                                                        <Input
+                                                            onChange={this.handleChange}
+                                                            type={this.state.showPasswordField ? "text" : "password"}
+                                                            id={this.clientSecretInputName}
+                                                            name={this.clientSecretInputName}
+                                                            autoComplete="password"
+                                                            invalid={this.state.failedRetrievingAuthorization || (this.state.attemptedSbParameterSubmit && !this.state.clientSecret)}
+                                                            value={this.state.clientSecret}
+                                                        />
+                                                        </Col>
+                                                        <Col xs="auto">
+                                                            <span 
+                                                                style={{
+                                                                    marginRight: '10px',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                onClick={() => {
+                                                                    this.setState({
+                                                                        showPasswordField: !this.state.showPasswordField,
+                                                                    });
+                                                                }}
+                                                            >
+                                                                {this.state.showPasswordField ? "Hide" : "Show"}
+                                                            </span>
+                                                        </Col>
+                                                    </Row>
                                                     <FormFeedback>
                                                         {this.state.failedRetrievingAuthorization ?
                                                             "Unable to retrieve credentials, Client ID and/or secret are probably not correct" :
@@ -599,7 +639,7 @@ class App extends React.Component {
                                                 <Col>
                                                     <Input
                                                         onChange={this.handleChange}
-                                                        type="text"
+                                                        type="url"
                                                         id="strongboxAuthUrl"
                                                         name="strongboxAuthUrl"
                                                         value={this.state.strongboxAuthUrl}
@@ -833,6 +873,10 @@ class App extends React.Component {
                                                                     reportingPeriod: "FiscalYears",
                                                                     numberOfPeriods: 2,
                                                                 },
+                                                                financialStatementsPeriod: {
+                                                                    reportingPeriod: "FiscalYears",
+                                                                    numberOfPeriods: 2,
+                                                                },
                                                             }}
                                                             orgId={this.state.orgId}
                                                             orgName={this.state.orgName}
@@ -851,7 +895,7 @@ class App extends React.Component {
                                                                     importExpanded: expanded,
                                                                 });
                                                             }}
-                                                            strongboxUrlOverride={this.state.strongboxAuthUrl}
+                                                            strongboxUrlOverride={this.state.strongboxAuthUrl.trim() === this.defaultStrongboxAuthUrl ? undefined : this.state.strongboxAuthUrl.trim()}
                                                         >
                                                             {(props) => {
                                                                 return undefined;
