@@ -182,6 +182,7 @@ const loanReasonOther = 4;
 class App extends React.Component {
     clientIdInputName = "username";
     clientSecretInputName = "password";
+    defaultStrongboxAuthUrl = "https://auth.strongbox.link";
 
     constructor(props) {
         super(props);
@@ -232,7 +233,7 @@ class App extends React.Component {
             orgId: '',
             clientId: '',
             clientSecret: '',
-            strongboxAuthUrl: "https://auth.strongbox.link",
+            strongboxAuthUrl: this.defaultStrongboxAuthUrl,
         };
 
         this.toggleFundUse = this.toggleFundUse.bind(this);
@@ -279,7 +280,7 @@ class App extends React.Component {
                 retrievingAuthorization: true,
             });
 
-            fetch(`${this.state.strongboxAuthUrl}/v1/token`, tokenFetchRequest)
+            fetch(`${this.state.strongboxAuthUrl.trim()}/v1/token`, tokenFetchRequest)
                 .then(r => {
                     if (r.ok) {
                         return r.json()
@@ -328,7 +329,7 @@ class App extends React.Component {
                         try {
                             console.log("Executing fetch call to generate a delegated access token");
 
-                            fetch(`${this.state.strongboxAuthUrl}/v1/DelegatedAccessTokens`, delegatedAuthFetchRequest)
+                            fetch(`${this.state.strongboxAuthUrl.trim()}/v1/DelegatedAccessTokens`, delegatedAuthFetchRequest)
                                 .then(r => {
                                     if (r.ok) {
                                         return r.json();
@@ -414,7 +415,10 @@ class App extends React.Component {
             headers: tempHeaders
         }
 
-        const statusUrl = `${this.state.strongboxAuthUrl}/Organizations/${this.state.orgId}/FinancialRecords/${financialRecordId}/ImportStatus`;
+        const strongboxApiUrl = this.state.strongboxAuthUrl.trim() === this.defaultStrongboxAuthUrl ?
+            "https://api.strongbox.link" : this.state.strongboxAuthUrl.trim();
+                                          
+        const statusUrl = `${strongboxApiUrl}/Organizations/${this.state.orgId}/FinancialRecords/${financialRecordId}/ImportStatus`;
 
         fetch(statusUrl, listRequest)
             .then(response => {
@@ -887,7 +891,7 @@ class App extends React.Component {
                                                                     importExpanded: expanded,
                                                                 });
                                                             }}
-                                                            strongboxUrlOverride={this.state.strongboxAuthUrl}
+                                                            strongboxUrlOverride={this.state.strongboxAuthUrl.trim() === this.defaultStrongboxAuthUrl ? undefined : this.state.strongboxAuthUrl.trim()}
                                                         >
                                                             {(props) => {
                                                                 return undefined;
