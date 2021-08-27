@@ -873,6 +873,10 @@ class App extends React.Component {
                                                                     reportingPeriod: "FiscalYears",
                                                                     numberOfPeriods: 2,
                                                                 },
+                                                                financialStatementsPeriod: {
+                                                                    reportingPeriod: "FiscalYears",
+                                                                    numberOfPeriods: 2,
+                                                                },
                                                             }}
                                                             orgId={this.state.orgId}
                                                             orgName={this.state.orgName}
