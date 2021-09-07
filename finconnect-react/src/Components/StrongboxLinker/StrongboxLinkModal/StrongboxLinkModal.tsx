@@ -50,9 +50,11 @@ type State = {
     descriptionTextQBD: string;
     descriptionTextXero: string;
     descriptionTextSageIntacct: string;
+    descriptionTextExample: string;
     qbOneWay: string;
     sageIntacctOneWay: string;
     xeroOneWay: string;
+    exampleOneWay: string;
     working: string;
     updateFinancialsNow: string;
     disconnect: string;
@@ -74,9 +76,11 @@ class StrongboxLinkModal extends React.PureComponent<Props, State> {
             descriptionTextQBD: translations.LinkModalDescriptionQBD,
             descriptionTextXero: translations.LinkModalDescriptionXero,
             descriptionTextSageIntacct: translations.LinkModalDescriptionSageIntacct,
+            descriptionTextExample: translations.LinkModalDescriptionExample,
             qbOneWay: translations.LinkModalQBOneWay,
             sageIntacctOneWay: translations.LinkModalSageIntacctOneWay,
             xeroOneWay: translations.LinkModalXeroOneWay,
+            exampleOneWay: translations.LinkModalExampleOneWay,
             working: translations.LinkModalWorking,
             updateFinancialsNow: translations.LinkModalUpdateFinancialsNow,
             disconnect: translations.DisconnectFromAccountingPkg,
@@ -87,6 +91,7 @@ class StrongboxLinkModal extends React.PureComponent<Props, State> {
         this.RenderConnectToXero = this.RenderConnectToXero.bind(this);
         this.RenderConnectToSageIntacct = this.RenderConnectToSageIntacct.bind(this);
         this.RenderConnectToQuickBooksDesktop = this.RenderConnectToQuickBooksDesktop.bind(this);
+        this.RenderConnectToExample = this.RenderConnectToExample.bind(this);
     }
 
     private _regularTextStyle: any = {};
@@ -122,6 +127,8 @@ class StrongboxLinkModal extends React.PureComponent<Props, State> {
                 qbOneWay: this.props.textContent.TextValue('LinkModalQBOneWay'),
                 xeroOneWay: this.props.textContent.TextValue('LinkModalXeroOneWay'),
                 sageIntacctOneWay: this.props.textContent.TextValue('LinkModalSageIntacctOneWay'),
+                descriptionTextExample: this.props.textContent.TextValue('LinkModalDescriptionExample'),
+                exampleOneWay: this.props.textContent.TextValue('LinkModalExampleOneWay'),
                 working: this.props.textContent.TextValue('LinkModalWorking'),
                 updateFinancialsNow: this.props.textContent.TextValue('LinkModalUpdateFinancialsNow'),
                 disconnect: this.props.textContent.TextValue('DisconnectFromAccountingPkg'),
@@ -302,6 +309,20 @@ class StrongboxLinkModal extends React.PureComponent<Props, State> {
         );
     }
 
+    private RenderConnectToExample = (props: StrongboxLinkerChildProps): React.ReactNode => {
+        return (
+            <>
+                <span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>{this.state.descriptionTextExample}</span>
+                <span style={this._securityTextStyle} className={'finagraph-strongbox-linker__connect-graphic-description secondary'}>
+                    {this.state.exampleOneWay}
+                </span>
+                {props.renderAuthButton({
+                    className: 'finagraph-strongbox-linker__auth-button',
+                })}
+            </>
+        );
+    }
+
     private RenderAccountingPackage = (props: StrongboxLinkerChildProps): React.ReactNode => {
         if (this.props.accountingPackage === AccountingPackage.Xero) {
             return this.RenderConnectToXero(props);
@@ -311,6 +332,8 @@ class StrongboxLinkModal extends React.PureComponent<Props, State> {
             return this.RenderConnectToQuickBooks(props);
         } else if (this.props.accountingPackage === AccountingPackage.SageIntacct) {
             return this.RenderConnectToSageIntacct(props);
+        } else if (this.props.accountingPackage === AccountingPackage.Example) {
+            return this.RenderConnectToExample(props);
         } else {
             return (<span style={this._regularTextStyle} className={'finagraph-strongbox-linker__description secondary'}>Unknown Accounting Package</span>);
         }

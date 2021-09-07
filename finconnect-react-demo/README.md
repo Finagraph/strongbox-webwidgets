@@ -23,7 +23,7 @@ This sample code demonstrates how to use the **FinConnect Widget** component tha
 
 The model above facilitates deploying the widget to a publicly available site. You can also use the locally built version of the widget included in the finconnect-react subdirectory which is likely easier if you are trying to step through the widget and observe what it's doing locally.   To do that, load finconnect-react-demo/package.json and replace the following:
 
-    "@finagraph/strongbox-react": "^0.1.85",
+    "@finagraph/strongbox-react": "^0.1.90",
    
 with:
 

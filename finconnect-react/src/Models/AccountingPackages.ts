@@ -7,6 +7,7 @@
     FreshBooks = "FreshBooks",
     Dynamics365 = "Dynamics365",
     Xero = "Xero",
+    Example = "Example",
 }
 
 export type AccountingPkgPresentation = {

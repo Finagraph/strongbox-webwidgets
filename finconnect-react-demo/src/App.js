@@ -147,6 +147,8 @@ import logo from './Images/Banner.svg';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import React from 'react';
 import {
     Button,
@@ -172,7 +174,7 @@ import StrongboxFinConnect from '@finagraph/strongbox-react';
  * TODO Specify a 'partnerName' that identifies your organization to the user of the widget.
  * For example, the 'partnerName' appears in the sentence "{partnerName} uses Strongbox to link your accounting system"
  */
-const partnerName = "Test Partner";
+const partnerName = "XYZ Bank";
 
 const loanReasonHiring = 1;
 const loanReasonEquipment = 2;
@@ -230,10 +232,14 @@ class App extends React.Component {
             attemptedSbParameterSubmit: false,
             showPasswordField: false,
             orgName: '',
-            orgId: '',
+            orgId: uuidv4(),
             clientId: '',
             clientSecret: '',
             strongboxAuthUrl: this.defaultStrongboxAuthUrl,
+            borrowerFirstName: "John",
+            borrowerLastName: "Smith",
+            borrowerEmailAddress: "johnsmith@mailinator.com",
+            borrowerLoanAmount: 1000000,
         };
 
         this.toggleFundUse = this.toggleFundUse.bind(this);
@@ -520,9 +526,10 @@ class App extends React.Component {
                             <Row style={{ marginTop: '15px' }}>
                                 <Col className="content-region warning-region">
                                     <p>None of the information you enter below will be saved. IMPORTANT, make sure that you keep your
-                                        strongbox credentials secret. These provide you with access to the Strongbox APIs and should never
-                                        be visible in client-side code. They should only be used in a server-server context where your keys
-                                        can be kept secret.
+                                        strongbox credentials secret. The only web sites where you should be entering these credentials
+                                        are the Strongbox Developer Portal, https://developer.strongbox.link and this demo site running at 
+                                        widgetdemo.strongbox.link.   These credentials should never be visible in client-side code. 
+                                        They should only be used in a server-server context where your keys can be kept secret.
                                     </p>
                                 </Col>
                             </Row>
@@ -601,7 +608,7 @@ class App extends React.Component {
                                     <Row>
                                         <Col className={"mt-2"} sm={12} md={6}>
                                             <FormGroup row>
-                                                <Label for="orgId" xs="12">Organization ID (Can be anything, creating a GUID is a good choice):</Label>
+                                                <Label for="orgId" xs="12">Organization ID (Can be anything, we created a GUID for you):</Label>
                                                 <Col>
                                                     <Input
                                                         onChange={this.handleChange}
@@ -676,17 +683,17 @@ class App extends React.Component {
                                     <Row>
                                         <Col className={"mt-2"} sm={12} md={6}>
                                             <FormGroup row>
-                                                <Label for="fname" xs="12">First name:</Label>
+                                                <Label for="borrowerFirstName" xs="12">First name:</Label>
                                                 <Col>
-                                                    <Input type="text" id="fname" name="fname" />
+                                                    <Input type="text" id="borrowerFirstName" name="borrowerFirstName" value={this.state.borrowerFirstName} onChange={this.handleChange} />
                                                 </Col>
                                             </FormGroup>
                                         </Col>
                                         <Col className={"mt-2"} sm={12} md={6}>
                                             <FormGroup row>
-                                                <Label for="lname" xs="12">Last name:</Label>
+                                                <Label for="borrowerLastName" xs="12">Last name:</Label>
                                                 <Col>
-                                                    <Input type="text" id="lname" name="lname" />
+                                                    <Input type="text" id="borrowerLastName" name="borrowerLastName" value={this.state.borrowerLastName} onChange={this.handleChange} />
                                                 </Col>
                                             </FormGroup>
                                         </Col>
@@ -696,15 +703,15 @@ class App extends React.Component {
                                             <FormGroup row>
                                                 <Label for="businessName" xs="12">Business name:</Label>
                                                 <Col>
-                                                    <Input type="text" id="businessName" name="businessName" />
+                                                    <Input type="text" id="orgName" name="orgName" value={this.state.orgName} onChange={this.handleChange} />
                                                 </Col>
                                             </FormGroup>
                                         </Col>
                                         <Col className={"mt-2"} sm={12} md={6}>
                                             <FormGroup row>
-                                                <Label for="email" xs="12">Email address:</Label>
+                                                <Label for="borrowerEmailAddress" xs="12">Email address:</Label>
                                                 <Col>
-                                                    <Input type="email" id="email" name="email" />
+                                                    <Input type="email" id="borrowerEmailAddress" name="borrowerEmailAddress" value={this.state.borrowerEmailAddress} onChange={this.handleChange} />
                                                 </Col>
                                             </FormGroup>
                                         </Col>
@@ -721,9 +728,16 @@ class App extends React.Component {
                                     <Row>
                                         <Col className={"mt-2"} sm={12} md={4}>
                                             <FormGroup row>
-                                                <Label for="loanamt" xs="12">Loan amount:</Label>
+                                                <Label for="borrowerLoanAmount" xs="12">Loan amount:</Label>
                                                 <Col>
-                                                    <Input type="number" id="loanamt" name="loanamt" />
+                                                    <Input 
+                                                       type="number" 
+                                                       id="borrowerLoanAmount" 
+                                                       name="borrowerLoanAmount" 
+                                                       value={this.state.borrowerLoanAmount} 
+                                                       onChange={this.handleChange} 
+                                                       step={1000} 
+                                                    />
                                                 </Col>
                                             </FormGroup>
                                         </Col>
@@ -895,6 +909,27 @@ class App extends React.Component {
                                                                     importExpanded: expanded,
                                                                 });
                                                             }}
+                                                            accountingPackages={
+                                                                [
+                                                                    {
+                                                                        package: "QuickBooksOnline",
+                                                                        descriptor: "Online"
+                                                                    },
+                                                                    {
+                                                                        package: "QuickBooksDesktop",
+                                                                        descriptor: "Desktop"
+                                                                    },
+                                                                    {
+                                                                        package: "SageIntacct"
+                                                                    },
+                                                                    {
+                                                                        package: "Xero"
+                                                                    },
+                                                                    {
+                                                                        package: "Example"
+                                                                    },
+                                                                ]
+                                                            }
                                                             strongboxUrlOverride={this.state.strongboxAuthUrl.trim() === this.defaultStrongboxAuthUrl ? undefined : this.state.strongboxAuthUrl.trim()}
                                                         >
                                                             {(props) => {

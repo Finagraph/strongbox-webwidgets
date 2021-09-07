@@ -5,6 +5,7 @@
     QBOnline: string,
     Xero: string,
     SageIntacct: string,
+    ExampleAccountingSystem: string,
     ClickYourAccountingPackage: string,
     PNLStatements: string,
     BalanceSheets: string,
@@ -29,9 +30,11 @@
     LinkModalDescriptionQBD: string,
     LinkModalDescriptionXero: string,
     LinkModalDescriptionSageIntacct: string,
+    LinkModalDescriptionExample: string,
     LinkModalQBOneWay: string;
     LinkModalXeroOneWay: string;
     LinkModalSageIntacctOneWay: string;
+    LinkModalExampleOneWay: string;
     LinkModalWorking: string;
     LinkModalUpdateFinancialsNow: string;
     TermsDescriptionParagraph1PreSBX: string,
@@ -42,5 +45,7 @@
     TermsBullet1Description: string;
     TermsBullet2Title: string;
     TermsBullet2Description: string;
+    TermsBullet3Title: string;
+    TermsBullet3Description: string;
 }
 

@@ -270,8 +270,9 @@ export class LinkerModal extends React.PureComponent<ISBLinkerModalProps, State>
         if (
             (accountingPackage === AccountingPackage.QuickBooksOnline) ||
             (accountingPackage === AccountingPackage.QuickBooksDesktop) ||
-            (accountingPackage === AccountingPackage.SageIntacct) || 
-            (accountingPackage === AccountingPackage.Xero)
+            (accountingPackage === AccountingPackage.SageIntacct) ||
+            (accountingPackage === AccountingPackage.Xero) ||
+            (accountingPackage === AccountingPackage.Example)
         ) {
             content = (
                 <StrongboxLinkModalContainer
@@ -295,6 +296,8 @@ export class LinkerModal extends React.PureComponent<ISBLinkerModalProps, State>
                     ref={(r: StrongboxLinkModalContainer): any => this._modal = r}
                 />
             );
+        } else {
+            console.error(`Accounting package ${accountingPackage} cannot be handled in LinkerModal:RenderModal`);
         }
 
         return content;
