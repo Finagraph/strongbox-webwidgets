@@ -37,10 +37,12 @@ import * as React from 'react'
 import qbImg from '../Images/QuickBooks.png';
 import xeroImg from '../Images/xero.png';
 import sageIntacctImg from '../Images/sageIntacct.png';
+import exampleImg from '../Images/DEX-LOGO.png';
 
 import '../styles.scss'
 
 import { AccountingPkgPresentation, AccountingPackage } from '../Models/AccountingPackages';
+import { Account } from '../Models/Api/strongbox.models';
 
 export type IAccountingPackageProps = {
     buttonsDisabled: boolean;
@@ -59,6 +61,8 @@ const GetButtonImage = (packageName: AccountingPackage): any => {
         result = xeroImg;
     } else if (packageName === AccountingPackage.SageIntacct) {
         result = sageIntacctImg;
+    } else if (packageName === AccountingPackage.Example) {
+        result = exampleImg;
     }
 
     return result;

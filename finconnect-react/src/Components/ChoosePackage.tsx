@@ -16,13 +16,15 @@ export type SupportedAccountingPackages =
     AccountingPackage.QuickBooksDesktop |
     AccountingPackage.QuickBooksOnline |
     AccountingPackage.SageIntacct |
-    AccountingPackage.Xero;
+    AccountingPackage.Xero |
+    AccountingPackage.Example;
 
 export const SupportedAccountingPackagesList: AccountingPackage[] = [
     AccountingPackage.QuickBooksDesktop,
     AccountingPackage.QuickBooksOnline,
     AccountingPackage.SageIntacct,
     AccountingPackage.Xero,
+    AccountingPackage.Example,
 ];
 
 export type AccountingPackageToShow = {
@@ -76,6 +78,11 @@ const ChoosePackage: React.FC<ChoosePackageProps> = (props: ChoosePackageProps):
         {
             featureName: AccountingPackage.SageIntacct,
             descriptor: undefined,
+            isPublic: true,
+        },
+        {
+            featureName: AccountingPackage.Example,
+            descriptor: props.textContent.TextValue('ExampleAccountingSystem'),
             isPublic: false,
         }
     ]

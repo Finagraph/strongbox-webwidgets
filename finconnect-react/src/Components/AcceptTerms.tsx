@@ -34,6 +34,8 @@ type WindowText = {
     bullet1Description: string;
     bullet2Title: string;
     bullet2Description: string;
+    bullet3Title: string;
+    bullet3Description: string;
     continue: string;
 }
 
@@ -70,6 +72,8 @@ const AcceptTerms: React.FC<AcceptTermsProps> = (props: AcceptTermsProps): React
                     replacement: props.partnerName,
                 },
             ),
+        bullet3Title: props.textContent.TextValue('TermsBullet3Title'),
+        bullet3Description: props.textContent.TextValue('TermsBullet3Description'),
         continue: props.textContent.TextValue('Continue'),
     });
 
@@ -124,6 +128,10 @@ const AcceptTerms: React.FC<AcceptTermsProps> = (props: AcceptTermsProps): React
                         <TermsBullet
                             title={windowText.bullet2Title}
                             description={windowText.bullet2Description}
+                        />
+                        <TermsBullet
+                            title={windowText.bullet3Title}
+                            description={windowText.bullet3Description}
                         />
                     </ThemeProvider>
                 </div>

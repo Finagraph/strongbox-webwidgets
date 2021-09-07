@@ -24,6 +24,8 @@ export function AccountingPackageConnectPrompt(accountingPackage: AccountingPack
             return `${connectTo} QuickBooks`;
         case AccountingPackage.SageIntacct:
             return `${connectTo} Sage Intacct`;
+        case AccountingPackage.Example:
+            return `${connectTo} DEX`;
         default:
             return unknown;
     }
@@ -39,6 +41,8 @@ export function AccountingPackageName(accountingPackage: AccountingPackage): str
             return 'QuickBooks';
         case AccountingPackage.SageIntacct:
             return 'Sage Intacct';
+        case AccountingPackage.Example:
+            return 'Example';
         default:
             return 'Unknown Accounting Package';
     }

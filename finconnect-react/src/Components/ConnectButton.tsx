@@ -5,6 +5,7 @@ import '../styles.scss';
 import xeroImg from '../Images/Connect/xero.png';
 import qbConnectImg from '../Images/Connect/qbo.png';
 import sageIntacctImg from '../Images/Connect/sageIntacct.png';
+import exampleImg from '../Images/Connect/example.png';
 
 type Props = {
     datasourceId: string;
@@ -28,6 +29,9 @@ export const ConnectButton: React.FC<Props> = (props): React.ReactElement => {
             break;
         case 'sageintacct':
             buttonImg = sageIntacctImg;
+            break;
+        case 'example':
+            buttonImg = exampleImg;
             break;
     }
 

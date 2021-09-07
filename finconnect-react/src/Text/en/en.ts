@@ -7,6 +7,7 @@ export const translations: BaseTextContent = {
     QBOnline: 'Online',
     Xero: 'Xero',
     SageIntacct: 'Sage Intacct',
+    ExampleAccountingSystem: 'Example',
     ClickYourAccountingPackage: 'Click on your accounting package above to authorize a secure connection to the financial data needed to fulfill your application',
     PNLStatements: 'Profit & Loss Statements',
     BalanceSheets: 'Balance Sheets',
@@ -36,9 +37,12 @@ export const translations: BaseTextContent = {
         'authorize a connection to Xero.',
     LinkModalDescriptionSageIntacct: 'After clicking \'Connect to Sage Intacct\', Sage will prompt you to ' +
         'authorize a connection to Sage Intacct.',
+    LinkModalDescriptionExample: 'After clicking \'Connect to DEX\', You will be prompted to ' +
+        'authorize a connection to DEX.',
     LinkModalQBOneWay: 'Information in QuickBooks will never be altered in any way. This is a fully secure, one-way data stream.',
     LinkModalXeroOneWay: 'Information in Xero will never be altered in any way. This is a fully secure, one-way data stream.',
     LinkModalSageIntacctOneWay: 'Information in Sage Intacct will never be altered in any way. This is a fully secure, one-way data stream.',
+    LinkModalExampleOneWay: 'Information in DEX will never be altered in any way. This is a fully secure, one-way data stream.', 
     LinkModalWorking: 'Working...',
     LinkModalUpdateFinancialsNow: 'Update Financials Now',
     TermsDescriptionParagraph1PreSBX: '${partnerName} uses',
@@ -49,4 +53,6 @@ export const translations: BaseTextContent = {
     TermsBullet1Description: 'Encryption protects your business\' financial data.',
     TermsBullet2Title: 'Private',
     TermsBullet2Description: 'Your credentials will never be made accessible to ${partnerName}.',
+    TermsBullet3Title: 'Read-only connection',
+    TermsBullet3Description: 'No information will be altered in your accounting system. This is a one-way data stream.',
 }
